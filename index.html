@@ -501,6 +501,50 @@
         font-weight: 500;
       }
 
+      /* ===== CUSTOM TOOLTIP ===== */
+      .custom-tooltip-container {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+      }
+
+      .custom-tooltip-container .custom-tooltip-text {
+        visibility: hidden;
+        width: max-content;
+        max-width: 250px;
+        background-color: var(--card);
+        color: var(--text);
+        text-align: center;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 8px 14px;
+        position: absolute;
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        font-size: 12px;
+        font-weight: 600;
+        pointer-events: none;
+        white-space: nowrap;
+      }
+
+      .custom-tooltip-container:hover .custom-tooltip-text {
+        visibility: visible;
+        opacity: 1;
+      }
+
+      .custom-tooltip-container .custom-tooltip-text::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: var(--card) transparent transparent transparent;
+      }
+
       /* ================================================================
          FORMS & INPUTS
          ================================================================ */
@@ -1722,6 +1766,47 @@
       // ================================================================
       // 3. UTILITY FUNCTIONS (Money, Escape, Toast)
       // ================================================================
+      function renderPaymentBadge(
+        isPaid,
+        category,
+        monthName,
+        year,
+        wazStartYear = "",
+        wazEndYear = "",
+      ) {
+        const color = isPaid ? "#059669" : "#e11d48"; // Green or Red
+        const bgColor = isPaid
+          ? "rgba(5, 150, 105, 0.15)"
+          : "rgba(225, 29, 72, 0.15)";
+
+        let tooltip = "";
+        if (category === "Waz Mahfil") {
+          const yearRange =
+            wazStartYear && wazEndYear
+              ? `${wazStartYear} - ${wazEndYear}`
+              : `${year}`;
+          tooltip = `Waz Mahfil: ${yearRange} (${isPaid ? "Paid" : "Pending"})`;
+        } else {
+          tooltip = `${category}: ${monthName} ${year} (${isPaid ? "Paid" : "Pending"})`;
+        }
+
+        // টুলটিপটি ডটের ঠিক উপরে (Top) থাকবে
+        const tooltipPositionStyle =
+          "bottom: 150%; top: auto; left: 50%; right: auto; transform: translateX(-50%); margin: 0;";
+        const arrowPositionStyle =
+          "top: 100%; bottom: auto; left: 50%; right: auto; margin-left: -5px; border-color: var(--card) transparent transparent transparent;";
+
+        return `<div class="custom-tooltip-container" style="display:flex; justify-content:center; align-items:center;">
+          <span style="display:inline-block; width:16px; height:16px; border-radius:50%; background-color:${color}; box-shadow: 0 0 0 3px ${bgColor};"></span>
+          <span class="custom-tooltip-text" style="${tooltipPositionStyle}">${tooltip}</span>
+          <style>
+            .custom-tooltip-container:hover .custom-tooltip-text::after {
+              ${arrowPositionStyle}
+            }
+          </style>
+        </div>`;
+      }
+
       function money(value) {
         return (
           "৳" +
@@ -2205,6 +2290,23 @@
               { familyID: query, mainPerson: query, mobile: query },
             ]);
 
+          // Waz Mahfil এর বছর বের করার জন্য সেটিংস আনুন
+          let settings = {};
+          try {
+            settings = await api("getSettings", [token]);
+          } catch (e) {}
+
+          let wazStartYear = "",
+            wazEndYear = "";
+          if (settings.WazMahfilStartDate) {
+            const match = settings.WazMahfilStartDate.match(/\d{4}/);
+            if (match) wazStartYear = match[0];
+          }
+          if (settings.WazMahfilEndDate) {
+            const match = settings.WazMahfilEndDate.match(/\d{4}/);
+            if (match) wazEndYear = match[0];
+          }
+
           cachedCollectionSearchResults = await Promise.all(
             results.map(async (family) => {
               try {
@@ -2212,30 +2314,40 @@
                   token,
                   family.familyID,
                 ]);
+                let paidMasjid = false;
+                let paidMadrasha = false;
+                let paidWaz = false;
+
+                if (status.paid && status.collections) {
+                  status.collections.forEach((c) => {
+                    if (c.category === "Masjid") paidMasjid = true;
+                    if (c.category === "Madrasha") paidMadrasha = true;
+                    if (c.category === "Waz Mahfil") paidWaz = true;
+                  });
+                }
+
                 return {
                   ...family,
-                  hasPaidThisMonth: status.paid,
+                  paidMasjid,
+                  paidMadrasha,
+                  paidWaz,
+                  wazStartYear: wazStartYear,
+                  wazEndYear: wazEndYear,
                   thisMonthCollections: status.collections || [],
                 };
               } catch (e) {
                 return {
                   ...family,
-                  hasPaidThisMonth: false,
+                  paidMasjid: false,
+                  paidMadrasha: false,
+                  paidWaz: false,
+                  wazStartYear: wazStartYear,
+                  wazEndYear: wazEndYear,
                   thisMonthCollections: [],
                 };
               }
             }),
           );
-
-          const paymentFilter = $("collectionPaymentFilter")
-            ? $("collectionPaymentFilter").value
-            : "ALL";
-          if (paymentFilter === "PENDING")
-            cachedCollectionSearchResults =
-              cachedCollectionSearchResults.filter((f) => !f.hasPaidThisMonth);
-          else if (paymentFilter === "PAID")
-            cachedCollectionSearchResults =
-              cachedCollectionSearchResults.filter((f) => f.hasPaidThisMonth);
 
           renderCollectionResultsPage();
         } catch (error) {
@@ -2271,29 +2383,42 @@
             <div class="card-header"><h3>Family Results</h3></div>
             <div class="card-body table-wrap">
               <table>
-                <thead><tr><th>#</th><th>Family ID</th><th>Main Person</th><th>Mobile</th><th>Area</th><th>Payment</th><th>Action</th></tr></thead>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Family ID</th>
+                    <th>Main Person</th>
+                    <th>Mobile</th>
+                    <th>Area</th>
+                    <th style="text-align:center; width:45px; padding: 10px 5px;">MAS</th>
+                    <th style="text-align:center; width:45px; padding: 10px 5px;">MAD</th>
+                    <th style="text-align:center; width:45px; padding: 10px 5px;">WAZ</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
                 <tbody>
                   ${paginated
                     .map((f, idx) => {
                       const serial = startIdx + idx + 1;
-                      const hasCollections =
-                        f.thisMonthCollections &&
-                        f.thisMonthCollections.length > 0;
                       const isActive = f.status === "ACTIVE";
+                      const now = new Date();
+                      const currMonthName = MONTH_NAMES[now.getMonth()];
+                      const currYear = now.getFullYear();
+
                       return `<tr>
                       <td>${serial}</td>
                       <td><b>${esc(f.familyID)}</b></td>
                       <td>${esc(f.mainPerson)}</td>
                       <td>${escMobile(f.mobile)}</td>
                       <td>${esc(f.villagePart)}</td>
-                      <td>${f.hasPaidThisMonth ? `<span class="badge badge-success">✅ Paid</span>` : `<span class="badge badge-warning">⏳ Pending</span>`}</td>
+                      <td style="text-align:center; padding: 10px 5px;">${renderPaymentBadge(f.paidMasjid, "Masjid", currMonthName, currYear)}</td>
+                      <td style="text-align:center; padding: 10px 5px;">${renderPaymentBadge(f.paidMadrasha, "Madrasha", currMonthName, currYear)}</td>
+                      <td style="text-align:center; padding: 10px 5px;">${renderPaymentBadge(f.paidWaz, "Waz Mahfil", "", currYear, f.wazStartYear || "", f.wazEndYear || "")}</td>
                       <td>
                         ${
                           !isActive
                             ? `<button class="btn btn-danger btn-sm" onclick='showInactiveNotice(${JSON.stringify({ familyID: f.familyID, mainPerson: f.mainPerson, villagePart: f.villagePart, status: f.status })})'>🔒 Locked</button>`
-                            : f.hasPaidThisMonth && hasCollections
-                              ? `<button class="btn btn-light btn-sm" onclick='showMonthlyPayment(${JSON.stringify(f.thisMonthCollections)})'>📋 Receipt</button>`
-                              : `<button class="btn btn-primary btn-sm" onclick='openCollectionForm(${JSON.stringify(f)})'>💰 Collect</button>`
+                            : `<button class="btn btn-primary btn-sm" onclick='openCollectionForm(${JSON.stringify(f)})'>💰 Collect</button>`
                         }
                       </td>
                     </tr>`;
@@ -2320,42 +2445,53 @@
         $("mainContent").innerHTML = `
           <div class="page-title">
             <div>
-              <h2 data-en="📜 Collection History" data-bn="📜 সংগ্রহ ইতিহাস">📜 Collection History</h2>
-              <p data-en="View detailed collection history." data-bn="বিস্তারিত সংগ্রহ ইতিহাস দেখুন।">View detailed collection history.</p>
+              <h2>📜 Collection History</h2>
+              <p>View detailed collection history.</p>
             </div>
           </div>
+          
           <div class="card" style="margin-bottom: 20px;">
             <div class="card-body">
-              <div class="grid grid-4" style="margin-bottom:0;">
-                <div class="form-group" style="margin-bottom:0;">
-                  <label data-en="Month" data-bn="মাস">Month</label>
-                  <select id="historyMonth" class="form-control">
+              
+              <!-- Single Row for Filters & Search -->
+              <div style="display: flex; flex-wrap: nowrap; gap: 10px; align-items: flex-end; overflow-x: auto; padding-bottom: 5px;">
+                
+                <!-- Month 15% -->
+                <div style="flex: 0 0 15%; min-width: 100px;">
+                  <label style="font-size: 12px; margin-bottom: 4px; display: block;">Month</label>
+                  <select id="historyMonth" class="form-control" style="padding: 10px;">
                     <option value="">All Months</option>
                     ${MONTH_NAMES.map((m, i) => `<option value="${i + 1}">${m}</option>`).join("")}
                   </select>
                 </div>
-                <div class="form-group" style="margin-bottom:0;">
-                  <label data-en="Year" data-bn="বছর">Year</label>
-                  <select id="historyYear" class="form-control">
+                
+                <!-- Year 10% -->
+                <div style="flex: 0 0 10%; min-width: 80px;">
+                  <label style="font-size: 12px; margin-bottom: 4px; display: block;">Year</label>
+                  <select id="historyYear" class="form-control" style="padding: 10px;">
                     <option value="">All Years</option>
                     ${years.map((y) => `<option value="${y}">${y}</option>`).join("")}
                   </select>
                 </div>
-                <div class="form-group" style="margin-bottom:0;">
-                  <label data-en="Category" data-bn="ক্যাটাগরি">Category</label>
-                  <select id="historyCategory" class="form-control">
+                
+                <!-- Category 15% -->
+                <div style="flex: 0 0 15%; min-width: 120px;">
+                  <label style="font-size: 12px; margin-bottom: 4px; display: block;">Category</label>
+                  <select id="historyCategory" class="form-control" style="padding: 10px;">
                     <option value="ALL">All Categories</option>
                     <option value="Masjid">Masjid</option>
                     <option value="Madrasha">Madrasha</option>
                     <option value="Waz Mahfil">Waz Mahfil</option>
                   </select>
                 </div>
+                
+                <!-- Area 10% (Super Admin) -->
                 ${
                   isSuper
                     ? `
-                <div class="form-group" style="margin-bottom:0;">
-                  <label data-en="Area" data-bn="এলাকা">Area</label>
-                  <select id="historyArea" class="form-control">
+                <div style="flex: 0 0 10%; min-width: 90px;">
+                  <label style="font-size: 12px; margin-bottom: 4px; display: block;">Area</label>
+                  <select id="historyArea" class="form-control" style="padding: 10px;">
                     <option value="ALL">All Areas</option>
                     <option value="Area 1">Area 1</option>
                     <option value="Area 2">Area 2</option>
@@ -2365,16 +2501,31 @@
                 </div>`
                     : ""
                 }
-              </div>
-              <div style="display:flex; gap:10px; margin-top: 15px;">
-                <input id="historySearch" class="form-control" placeholder="Family ID, Main Person or Mobile" style="flex:1;">
-                <button class="btn btn-primary" onclick="loadHistory()">🔎 <span data-en="Search" data-bn="খুঁজুন">Search</span></button>
+                
+                <!-- Search Input 30% -->
+                <div style="flex: 1 1 30%; min-width: 150px;">
+                  <label style="font-size: 12px; margin-bottom: 4px; display: block;">Search</label>
+                  <input id="historySearch" class="form-control" placeholder="Family ID, Name or Mobile" style="padding: 10px;">
+                </div>
+                
+                <!-- Search Button 5% -->
+                <div style="flex: 0 0 5%; min-width: 60px;">
+                  <button class="btn btn-primary" id="historySearchBtn" style="width: 100%; padding: 10px; height: 44px; display: flex; align-items: center; justify-content: center;" onclick="loadHistory()">
+                    <svg id="historySearchIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <svg id="historySearchSpinner" class="hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg>
+                  </button>
+                </div>
+                
               </div>
             </div>
           </div>
           <div id="historyResults">
              <div class="empty">Loading...</div>
           </div>
+          
+          <style>
+            @keyframes spin { 100% { transform: rotate(360deg); } }
+          </style>
         `;
         updateLanguage();
         loadHistory();
@@ -2390,14 +2541,14 @@
           search: $("historySearch") ? $("historySearch").value.trim() : "",
         };
 
-        const btn = document.querySelector(
-          '#mainContent button[onclick="loadHistory()"]',
-        );
-        const oldHTML = btn ? btn.innerHTML : "";
-        if (btn) {
-          btn.disabled = true;
-          btn.innerHTML = "⏳ <span>Searching...</span>";
-        }
+        // Show Spinner
+        const btn = $("historySearchBtn");
+        const icon = $("historySearchIcon");
+        const spinner = $("historySearchSpinner");
+
+        if (btn) btn.disabled = true;
+        if (icon) icon.classList.add("hidden");
+        if (spinner) spinner.classList.remove("hidden");
 
         try {
           cachedHistoryResults = await api("getFilteredCollectionHistory", [
@@ -2408,11 +2559,10 @@
         } catch (error) {
           handleApiError(error);
         } finally {
-          if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = oldHTML;
-            updateLanguage();
-          }
+          // Hide Spinner
+          if (btn) btn.disabled = false;
+          if (icon) icon.classList.remove("hidden");
+          if (spinner) spinner.classList.add("hidden");
         }
       }
 
@@ -2436,20 +2586,25 @@
           <div class="card">
             <div class="card-body table-wrap">
               <table>
-                <thead><tr><th>#</th><th>Date</th><th>Family ID</th><th>Main Person</th><th>Category</th><th>Amount</th><th>Area</th><th>Collected By</th></tr></thead>
+                <thead><tr><th>#</th><th>Date</th><th>Family ID</th><th>Main Person</th><th>Category</th><th>Amount</th><th>Area</th><th>Collected By</th><th>Action</th></tr></thead>
                 <tbody>
                   ${paginated
                     .map((h, idx) => {
                       const serial = startIdx + idx + 1;
                       return `<tr>
                       <td>${serial}</td>
-                      <td>${esc(h.collectionDate)}</td> <!-- সরাসরি ব্যাকএন্ড থেকে আসা ডেট দেখাবে -->
+                      <td>${esc(h.collectionDate)}</td>
                       <td><b>${esc(h.familyID)}</b></td>
                       <td>${esc(h.mainPerson)}</td>
                       <td><span class="badge badge-info">${esc(h.category)}</span></td>
                       <td><b>${money(h.amount)}</b></td>
                       <td>${esc(h.villagePart)}</td>
                       <td>${esc(h.adminName)}</td>
+                      <td>
+                        <button class="btn btn-light btn-sm" onclick='showHistoryReceipt(${JSON.stringify(h)})'>
+                          📋 Receipt
+                        </button>
+                      </td>
                     </tr>`;
                     })
                     .join("")}
@@ -2531,6 +2686,23 @@
               { familyID: query, mainPerson: query, mobile: query },
             ]);
 
+          // Waz Mahfil এর বছর বের করার জন্য সেটিংস আনুন
+          let settings = {};
+          try {
+            settings = await api("getSettings", [token]);
+          } catch (e) {}
+
+          let wazStartYear = "",
+            wazEndYear = "";
+          if (settings.WazMahfilStartDate) {
+            const match = settings.WazMahfilStartDate.match(/\d{4}/);
+            if (match) wazStartYear = match[0];
+          }
+          if (settings.WazMahfilEndDate) {
+            const match = settings.WazMahfilEndDate.match(/\d{4}/);
+            if (match) wazEndYear = match[0];
+          }
+
           cachedGlobalSearchResults = await Promise.all(
             results.map(async (family) => {
               try {
@@ -2538,15 +2710,35 @@
                   token,
                   family.familyID,
                 ]);
+                let paidMasjid = false;
+                let paidMadrasha = false;
+                let paidWaz = false;
+
+                if (status.paid && status.collections) {
+                  status.collections.forEach((c) => {
+                    if (c.category === "Masjid") paidMasjid = true;
+                    if (c.category === "Madrasha") paidMadrasha = true;
+                    if (c.category === "Waz Mahfil") paidWaz = true;
+                  });
+                }
+
                 return {
                   ...family,
-                  hasPaidThisMonth: status.paid,
+                  paidMasjid,
+                  paidMadrasha,
+                  paidWaz,
+                  wazStartYear: wazStartYear,
+                  wazEndYear: wazEndYear,
                   thisMonthCollections: status.collections || [],
                 };
               } catch (e) {
                 return {
                   ...family,
-                  hasPaidThisMonth: false,
+                  paidMasjid: false,
+                  paidMadrasha: false,
+                  paidWaz: false,
+                  wazStartYear: wazStartYear,
+                  wazEndYear: wazEndYear,
                   thisMonthCollections: [],
                 };
               }
@@ -2584,30 +2776,43 @@
           <div class="card">
             <div class="card-body table-wrap">
               <table>
-                <thead><tr><th>#</th><th>Family ID</th><th>Main Person</th><th>Mobile</th><th>Area</th><th>Payment</th><th>Action</th></tr></thead>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Family ID</th>
+                    <th>Main Person</th>
+                    <th>Mobile</th>
+                    <th>Area</th>
+                    <th style="text-align:center; width:45px; padding: 10px 5px;">MAS</th>
+                    <th style="text-align:center; width:45px; padding: 10px 5px;">MAD</th>
+                    <th style="text-align:center; width:45px; padding: 10px 5px;">WAZ</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
                 <tbody>
                   ${paginated
                     .map((f, idx) => {
                       const serial = startIdx + idx + 1;
-                      const hasCollections =
-                        f.thisMonthCollections &&
-                        f.thisMonthCollections.length > 0;
                       const isActive = f.status === "ACTIVE";
+                      const now = new Date();
+                      const currMonthName = MONTH_NAMES[now.getMonth()];
+                      const currYear = now.getFullYear();
+
                       return `<tr>
                       <td>${serial}</td>
                       <td><b>${esc(f.familyID)}</b></td>
                       <td>${esc(f.mainPerson)}</td>
                       <td>${escMobile(f.mobile)}</td>
                       <td>${esc(f.villagePart)}</td>
-                      <td>${f.hasPaidThisMonth ? `<span class="payment-status paid">✅ Paid</span>` : `<span class="payment-status pending">⏳ Pending</span>`}</td>
+                      <td style="text-align:center; padding: 10px 5px;">${renderPaymentBadge(f.paidMasjid, "Masjid", currMonthName, currYear)}</td>
+                      <td style="text-align:center; padding: 10px 5px;">${renderPaymentBadge(f.paidMadrasha, "Madrasha", currMonthName, currYear)}</td>
+                      <td style="text-align:center; padding: 10px 5px;">${renderPaymentBadge(f.paidWaz, "Waz Mahfil", "", currYear, f.wazStartYear || "", f.wazEndYear || "")}</td>
                       <td>
                         <div style="display:flex; align-items:center; gap:6px;">
                           ${
                             !isActive
                               ? `<button class="btn btn-danger btn-sm" onclick='showInactiveNotice(${JSON.stringify({ familyID: f.familyID, mainPerson: f.mainPerson, villagePart: f.villagePart, status: f.status })})'>🔒 Locked</button>`
-                              : f.hasPaidThisMonth && hasCollections
-                                ? `<button class="btn btn-light btn-sm" onclick='showMonthlyPayment(${JSON.stringify(f.thisMonthCollections)})'>📋 Receipt</button>`
-                                : `<button class="btn btn-primary btn-sm" onclick='openCollectionForm(${JSON.stringify(f)})'>💰 Collect</button>`
+                              : `<button class="btn btn-primary btn-sm" onclick='openCollectionForm(${JSON.stringify(f)})'>💰 Collect</button>`
                           }
                           
                           ${
@@ -2642,9 +2847,6 @@
         const prevAreaFilter = $("familyAreaFilter")
           ? $("familyAreaFilter").value
           : "ALL";
-        const prevPaymentFilter = $("familyPaymentFilter")
-          ? $("familyPaymentFilter").value
-          : "ALL";
 
         $("mainContent").innerHTML = `
           <div class="page-title">
@@ -2659,11 +2861,6 @@
                 <option value="ALL" data-en="All Areas" data-bn="সব এলাকা">All Areas</option>
                 <option value="Area 1">Area 1</option><option value="Area 2">Area 2</option><option value="Area 3">Area 3</option><option value="Area 4">Area 4</option>
               </select>
-              <select id="familyPaymentFilter" class="form-control" style="width:auto;min-width:110px;padding:10px 14px;" onchange="renderFamilies()" title="Filter by Payment">
-                <option value="ALL" data-en="All Payments" data-bn="সব পেমেন্ট">All Payments</option>
-                <option value="PENDING" data-en="Pending" data-bn="বাকি">Pending</option>
-                <option value="PAID" data-en="Paid" data-bn="পরিশোধিত">Paid</option>
-              </select>
               <button class="btn btn-primary" onclick="openFamilyForm()">➕ <span data-en="Add Family" data-bn="পরিবার যোগ করুন">Add Family</span></button>
               <button class="btn btn-success" onclick="openExcelImport()">📥 <span data-en="Import Excel" data-bn="এক্সেল ইমপোর্ট">Import Excel</span></button>
             </div>`
@@ -2675,17 +2872,33 @@
         updateLanguage();
 
         if ($("familyAreaFilter")) $("familyAreaFilter").value = prevAreaFilter;
-        if ($("familyPaymentFilter"))
-          $("familyPaymentFilter").value = prevPaymentFilter;
 
         try {
           const families = await api("getAllFamiliesWithStatus", [token]);
-          const filterVal = prevAreaFilter;
-          const paymentFilterVal = prevPaymentFilter;
+          const filterVal = $("familyAreaFilter")
+            ? $("familyAreaFilter").value
+            : "ALL";
 
           const filtered = families.filter(
             (f) => filterVal === "ALL" || f.villagePart === filterVal,
           );
+
+          // Waz Mahfil এর বছর বের করার জন্য সেটিংস আনুন
+          let settings = {};
+          try {
+            settings = await api("getSettings", [token]);
+          } catch (e) {}
+
+          let wazStartYear = "",
+            wazEndYear = "";
+          if (settings.WazMahfilStartDate) {
+            const match = settings.WazMahfilStartDate.match(/\d{4}/);
+            if (match) wazStartYear = match[0];
+          }
+          if (settings.WazMahfilEndDate) {
+            const match = settings.WazMahfilEndDate.match(/\d{4}/);
+            if (match) wazEndYear = match[0];
+          }
 
           window.cachedFamilies = await Promise.all(
             filtered.map(async (family) => {
@@ -2694,29 +2907,40 @@
                   token,
                   family.familyID,
                 ]);
+                let paidMasjid = false;
+                let paidMadrasha = false;
+                let paidWaz = false;
+
+                if (status.paid && status.collections) {
+                  status.collections.forEach((c) => {
+                    if (c.category === "Masjid") paidMasjid = true;
+                    if (c.category === "Madrasha") paidMadrasha = true;
+                    if (c.category === "Waz Mahfil") paidWaz = true;
+                  });
+                }
+
                 return {
                   ...family,
-                  hasPaidThisMonth: status.paid,
+                  paidMasjid,
+                  paidMadrasha,
+                  paidWaz,
+                  wazStartYear: wazStartYear,
+                  wazEndYear: wazEndYear,
                   thisMonthCollections: status.collections || [],
                 };
               } catch (e) {
                 return {
                   ...family,
-                  hasPaidThisMonth: false,
+                  paidMasjid: false,
+                  paidMadrasha: false,
+                  paidWaz: false,
+                  wazStartYear: wazStartYear,
+                  wazEndYear: wazEndYear,
                   thisMonthCollections: [],
                 };
               }
             }),
           );
-
-          if (paymentFilterVal === "PENDING")
-            window.cachedFamilies = window.cachedFamilies.filter(
-              (f) => !f.hasPaidThisMonth,
-            );
-          else if (paymentFilterVal === "PAID")
-            window.cachedFamilies = window.cachedFamilies.filter(
-              (f) => f.hasPaidThisMonth,
-            );
 
           renderFamilyTablePage(1);
         } catch (error) {
@@ -2748,10 +2972,27 @@
           return `<div class="empty" data-en="No family found." data-bn="কোনো পরিবার পাওয়া যায়নি।">No family found.</div>`;
         const offset = Number(startOffset || 0);
         const isSuper = isSuperAdmin();
+
         return `
           <div class="table-wrap">
             <table>
-              <thead><tr><th>#</th><th>Family ID</th><th>Main Person</th><th>Date of Birth</th><th>Age</th><th>Gender</th><th>Members</th><th>Mobile</th><th>Area</th><th>Payment</th>${isSuper ? "<th>Action</th>" : "<th>Status</th>"}</tr></thead>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Family ID</th>
+                  <th>Main Person</th>
+                  <th>Date of Birth</th>
+                  <th>Age</th>
+                  <th>Gender</th>
+                  <th>Members</th>
+                  <th>Mobile</th>
+                  <th>Area</th>
+                  <th style="text-align:center; width:45px; padding: 10px 5px;">MAS</th>
+                  <th style="text-align:center; width:45px; padding: 10px 5px;">MAD</th>
+                  <th style="text-align:center; width:45px; padding: 10px 5px;">WAZ</th>
+                  ${isSuper ? "<th>Action</th>" : "<th>Status</th>"}
+                </tr>
+              </thead>
               <tbody>
                 ${families
                   .map((f, idx) => {
@@ -2761,6 +3002,10 @@
                       f.age !== undefined && f.age !== ""
                         ? f.age
                         : calculateAge(f.dob);
+                    const now = new Date();
+                    const currMonthName = MONTH_NAMES[now.getMonth()];
+                    const currYear = now.getFullYear();
+
                     return `<tr>
                     <td>${serial}</td>
                     <td><b>${esc(f.familyID)}</b></td>
@@ -2771,7 +3016,9 @@
                     <td>${Number(f.totalMembers || 0)}</td>
                     <td>${escMobile(f.mobile)}</td>
                     <td>${esc(f.villagePart)}</td>
-                    <td>${f.hasPaidThisMonth ? `<span class="payment-status paid">✅ Paid</span>` : `<span class="payment-status pending">⏳ Pending</span>`}</td>
+                    <td style="text-align:center; padding: 10px 5px;">${renderPaymentBadge(f.paidMasjid, "Masjid", currMonthName, currYear)}</td>
+                    <td style="text-align:center; padding: 10px 5px;">${renderPaymentBadge(f.paidMadrasha, "Madrasha", currMonthName, currYear)}</td>
+                    <td style="text-align:center; padding: 10px 5px;">${renderPaymentBadge(f.paidWaz, "Waz Mahfil", "", currYear, f.wazStartYear || "", f.wazEndYear || "")}</td>
                     <td>
                       ${
                         isSuper
@@ -3656,11 +3903,23 @@
           return;
         }
         let totalAmount = 0;
-        const firstDate = new Date(collections[0].collectionDate);
-        const monthName = isNaN(firstDate.getTime())
-          ? "—"
-          : firstDate.toLocaleString("default", { month: "long" });
-        const year = isNaN(firstDate.getTime()) ? "—" : firstDate.getFullYear();
+
+        const strDate = String(collections[0].collectionDate).trim();
+        const match = strDate.match(/^(\d{1,2})\s+([A-Za-z]+),?\s+(\d{4})/);
+        let monthName = "—";
+        let year = "—";
+
+        if (match) {
+          monthName = match[2];
+          year = match[3];
+        } else {
+          const firstDate = new Date(collections[0].collectionDate);
+          if (!isNaN(firstDate.getTime())) {
+            monthName = firstDate.toLocaleString("default", { month: "long" });
+            year = firstDate.getFullYear();
+          }
+        }
+
         let familyMainPerson = collections[0].adminName || "N/A";
         let familyID = collections[0].familyID;
 
@@ -3674,18 +3933,49 @@
 
         let html = `
           <div class="receipt" id="receiptContent">
-            <div class="receipt-title"><h2>SADANANDAPUR MANAGEMENT SYSTEM</h2><div class="sub">MONTHLY PAYMENT RECEIPT</div><div style="font-size:14px;color:#64748b;margin-top:5px;">📅 ${monthName} ${year}</div></div>
+            <div class="receipt-title">
+              <h2>SADANANDAPUR MANAGEMENT SYSTEM</h2>
+              <div class="sub">MONTHLY PAYMENT RECEIPT</div>
+              <div style="font-size:14px;color:#64748b;margin-top:5px;">
+                📅 ${esc(monthName)} ${esc(year)}
+              </div>
+            </div>
             <div class="receipt-row"><span class="label">Family ID</span><span class="value">${esc(collections[0].familyID)}</span></div>
             <div class="receipt-row"><span class="label">Main Person</span><span class="value">${esc(familyMainPerson)}</span></div>
             <div class="receipt-row"><span class="label">Area</span><span class="value">${esc(collections[0].villagePart)}</span></div>
             <div class="receipt-items">
         `;
+
         collections.forEach((col) => {
           totalAmount += Number(col.amount || 0);
           const isWaz = col.category === "Waz Mahfil";
           const periodLabel = isWaz ? "Annual" : "Monthly";
-          html += `<div class="receipt-item"><div><div class="item-name">${esc(col.category)} <span style="font-size:11px;color:#94a3b8;">(${periodLabel})</span></div>${col.monthsCovered && col.monthsCovered > 1 && !isWaz ? `<div class="item-detail">📅 ${col.monthsCovered} month(s) covered</div>` : ""}${col.unlockReason ? `<div class="item-detail" style="color:#d97706;">💬 ${esc(col.unlockReason)}</div>` : ""}${col.requiredAmount ? `<div class="item-detail">Required: ${money(col.requiredAmount)}</div>` : ""}</div><div class="item-amount">${money(col.amount)}</div></div>`;
+
+          let monthDisplay = "";
+          if (!isWaz && col.monthsCovered > 0) {
+            const currentDate = new Date();
+            const currentMonthIdx = currentDate.getMonth();
+            let monthNamesList = [];
+            for (let i = 0; i < col.monthsCovered; i++) {
+              let mIdx = (currentMonthIdx + i) % 12;
+              monthNamesList.push(MONTH_NAMES[mIdx].substring(0, 3));
+            }
+            monthDisplay = `(${monthNamesList.join(", ")})`;
+          }
+
+          html += `
+            <div class="receipt-item">
+              <div>
+                <div class="item-name">${esc(col.category)} <span style="font-size:11px;color:#94a3b8;">(${periodLabel})</span></div>
+                ${!isWaz && col.monthsCovered > 0 ? `<div class="item-detail">📅 ${col.monthsCovered} month(s) covered ${monthDisplay}</div>` : ""}
+                ${col.unlockReason ? `<div class="item-detail" style="color:#d97706;">💬 ${esc(col.unlockReason)}</div>` : ""}
+                ${col.requiredAmount ? `<div class="item-detail">Required: ${money(col.requiredAmount)}</div>` : ""}
+              </div>
+              <div class="item-amount">${money(col.amount)}</div>
+            </div>
+          `;
         });
+
         html += `
             </div>
             <div class="receipt-total"><span>TOTAL</span><span>${money(totalAmount)}</span></div>
@@ -3695,6 +3985,7 @@
             <div class="receipt-footer">Thank you for your payment.<div style="margin-top:4px;color:#94a3b8;font-size:11px;">This family has already paid for this month.</div></div>
           </div>
         `;
+
         openModal(
           "🧾 Monthly Payment Receipt",
           html,
@@ -3721,6 +4012,80 @@
           month: monthName,
           year,
         };
+      }
+
+      function showHistoryReceipt(record) {
+        const isWaz = record.category === "Waz Mahfil";
+        const periodLabel = isWaz ? "Annual" : "Monthly";
+
+        let totalAmount = Number(record.amount || 0);
+
+        let displayDate = record.collectionDate;
+        let monthDisplay = "";
+
+        if (!isWaz) {
+          if (displayDate.includes(",")) {
+            const parts = displayDate.split(",");
+            const mName = parts[0].trim();
+            const yName = parts[1].trim();
+            monthDisplay = `<div class="item-detail" style="color: #4f46e5; font-weight: bold; margin-top: 4px;">📅 Month: ${mName} ${yName}</div>`;
+            displayDate = `${mName} ${yName}`;
+          } else {
+            const match = displayDate.match(
+              /^(\d{1,2})\s+([A-Za-z]+),?\s+(\d{4})/,
+            );
+            if (match) {
+              displayDate = `${match[1]} ${match[2]}, ${match[3]}`;
+            }
+          }
+        } else {
+          const match = displayDate.match(
+            /^(\d{1,2})\s+([A-Za-z]+),?\s+(\d{4})/,
+          );
+          if (match) {
+            displayDate = `${match[1]} ${match[2]}, ${match[3]}`;
+          }
+        }
+
+        let html = `
+          <div class="receipt" id="receiptContent">
+            <div class="receipt-title">
+              <h2>SADANANDAPUR MANAGEMENT SYSTEM</h2>
+              <div class="sub">COLLECTION RECEIPT</div>
+            </div>
+            <div class="receipt-row"><span class="label">Receipt No.</span><span class="value">${esc(record.collectionID || "N/A")}</span></div>
+            <div class="receipt-row"><span class="label">Family ID</span><span class="value">${esc(record.familyID)}</span></div>
+            <div class="receipt-row"><span class="label">Main Person</span><span class="value">${esc(record.mainPerson)}</span></div>
+            <div class="receipt-row"><span class="label">Area</span><span class="value">${esc(record.villagePart)}</span></div>
+            
+            <div class="receipt-items">
+              <div class="receipt-item">
+                <div>
+                  <div class="item-name">${esc(record.category)} <span style="font-size:11px;color:#94a3b8;">(${periodLabel})</span></div>
+                  ${!isWaz && monthDisplay ? monthDisplay : ""}
+                  ${isWaz && record.unlockReason ? `<div class="item-detail" style="color:#d97706;">💬 ${esc(record.unlockReason)}</div>` : ""}
+                </div>
+                <div class="item-amount">${money(record.amount)}</div>
+              </div>
+            </div>
+
+            <div class="receipt-total"><span>TOTAL</span><span>${money(totalAmount)}</span></div>
+            <div class="receipt-row"><span class="label">Payment</span><span class="value">Cash</span></div>
+            <div class="receipt-row"><span class="label">Collector</span><span class="value">${esc(record.adminName)}</span></div>
+            <div class="receipt-row"><span class="label">Date & Time</span><span class="value">${esc(displayDate)}</span></div>
+            
+            <div class="receipt-footer">
+              Thank you for your payment.
+            </div>
+          </div>
+        `;
+
+        openModal(
+          "🧾 Collection Receipt",
+          html,
+          `<button class="btn btn-light" onclick="closeModal()">Close</button><button class="btn btn-primary" onclick="downloadHistoryReceiptJPG('${esc(record.collectionID || "receipt")}')">📥 Download JPG</button>`,
+        );
+        updateLanguage();
       }
 
       function showReceipt(receipt) {
@@ -3768,7 +4133,7 @@
         };
       }
 
-      async function downloadReceiptJPG() {
+      async function downloadHistoryReceiptJPG(receiptNo) {
         const receiptEl = document.querySelector("#modalBody .receipt");
         if (!receiptEl) {
           toast("No receipt to download.", "error");
@@ -3779,13 +4144,13 @@
           return;
         }
         const button = document.querySelector(
-          '#modalFooter button[onclick*="downloadReceiptJPG"]',
+          '#modalFooter button[onclick*="downloadHistoryReceiptJPG"]',
         );
         const oldButtonHTML = button ? button.innerHTML : "";
         try {
           if (button) {
             button.disabled = true;
-            button.innerHTML = "⏳ <span>Generating JPG...</span>";
+            button.innerHTML = "⏳ Generating JPG...";
           }
           const clone = receiptEl.cloneNode(true);
           clone.id = "jpgReceiptClone";
@@ -3798,7 +4163,7 @@
             borderRadius: "16px",
             boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
             border: "1px solid #e2e8f0",
-            fontFamily: '"Exo 2", "Hind Siliguri", sans-serif',
+            fontFamily: '"Exo 2", sans-serif',
             color: "#1a1a2e",
           });
 
@@ -3827,7 +4192,6 @@
           });
           const dataUrl = canvas.toDataURL("image/jpeg", 0.95);
           const link = document.createElement("a");
-          const receiptNo = lastReceipt?.collectionID || "receipt";
           const safeReceiptNo = String(receiptNo).replace(
             /[^a-zA-Z0-9_-]/g,
             "_",
@@ -3849,7 +4213,6 @@
           if (button) {
             button.disabled = false;
             button.innerHTML = oldButtonHTML;
-            updateLanguage();
           }
         }
       }
@@ -3872,96 +4235,217 @@
         const madrasha = Number(settings.MadrashaMonthly || 50);
         const waz = Number(settings.WazMahfil || 500);
 
-        // Settings থেকে Waz Mahfil Expiry Date চেক করা
-        let isWazLocked = false;
-        let globalWazExpiry = settings.WazMahfilExpiryDate || "";
+        // Waz Mahfil এর বছর বের করা
+        let wazStartYear = "",
+          wazEndYear = "";
+        if (settings.WazMahfilStartDate) {
+          const match = settings.WazMahfilStartDate.match(/\d{4}/);
+          if (match) wazStartYear = match[0];
+        }
+        if (settings.WazMahfilEndDate) {
+          const match = settings.WazMahfilEndDate.match(/\d{4}/);
+          if (match) wazEndYear = match[0];
+        }
 
-        if (globalWazExpiry) {
-          const expiryDate = new Date(globalWazExpiry);
-          if (!isNaN(expiryDate.getTime()) && new Date() < expiryDate) {
-            isWazLocked = true;
+        // Settings থেকে Waz Mahfil Start/End Date চেক করা
+        let isWazDateLocked = false;
+        let wazStartStr = settings.WazMahfilStartDate || "";
+        let wazEndStr = settings.WazMahfilEndDate || "";
+        let wazStart = null,
+          wazEnd = null;
+
+        if (wazStartStr) {
+          const match = wazStartStr.match(
+            /^(\d{1,2})\s+([A-Za-z]+),?\s+(\d{4})/,
+          );
+          if (match) {
+            const mIdx = MONTH_NAMES.findIndex(
+              (m) => m.toLowerCase() === match[2].toLowerCase(),
+            );
+            if (mIdx !== -1)
+              wazStart = new Date(Number(match[3]), mIdx, Number(match[1]));
           }
         }
+        if (wazEndStr) {
+          const match = wazEndStr.match(/^(\d{1,2})\s+([A-Za-z]+),?\s+(\d{4})/);
+          if (match) {
+            const mIdx = MONTH_NAMES.findIndex(
+              (m) => m.toLowerCase() === match[2].toLowerCase(),
+            );
+            if (mIdx !== -1)
+              wazEnd = new Date(Number(match[3]), mIdx, Number(match[1]));
+          }
+        }
+
+        const now = new Date();
+        if (wazStart && wazEnd) {
+          if (now < wazStart || now > wazEnd) {
+            isWazDateLocked = true;
+          }
+        }
+
+        // পেইড স্ট্যাটাস চেক
+        const isMasjidPaid = family.paidMasjid || false;
+        const isMadrashaPaid = family.paidMadrasha || false;
+        const isWazPaid = family.paidWaz || false;
+
+        // ডাইনামিক নোটিশ তৈরি
+        const currMonthName = MONTH_NAMES[now.getMonth()];
+        const currYear = now.getFullYear();
+        const yearRange =
+          wazStartYear && wazEndYear
+            ? `${wazStartYear} - ${wazEndYear}`
+            : currYear;
+
+        const masjidNotice = `${currMonthName} ${currYear} (Paid)`;
+        const madrashaNotice = `${currMonthName} ${currYear} (Paid)`;
+        const wazNotice = `${yearRange} (Paid)`;
+
+        // ডাইনামিক নোটিশ ব্যাজ স্টাইল (আরও প্রিমিয়াম)
+        const noticeStyle = `
+          font-size: 12px; 
+          color: #059669; 
+          margin-top: 10px; 
+          font-weight: 700; 
+          display: inline-flex; 
+          align-items: center; 
+          gap: 6px; 
+          padding: 6px 14px; 
+          background: rgba(5, 150, 105, 0.08); 
+          border-radius: 8px;
+          border: 1px solid rgba(5, 150, 105, 0.3);
+          box-shadow: 0 2px 5px rgba(5, 150, 105, 0.1);
+        `;
+
+        // কাস্টম SVG টিক আইকন
+        const paidIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+
+        const disabledStyle = "opacity: 0.6; cursor: not-allowed;";
 
         openModal(
           "💰 New Collection",
           `
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;padding:16px;background:var(--bg);border-radius:16px;">
-      <div><div style="font-size:12px;color:var(--muted);font-weight:600;">Family ID</div><div style="font-weight:700;font-size:15px;">${esc(family.familyID)}</div></div>
-      <div><div style="font-size:12px;color:var(--muted);font-weight:600;">Main Person</div><div style="font-weight:700;font-size:15px;">${esc(family.mainPerson)}</div></div>
-      <div><div style="font-size:12px;color:var(--muted);font-weight:600;">Area</div><div style="font-weight:700;font-size:15px;">${esc(family.villagePart)}</div></div>
-      <div><div style="font-size:12px;color:var(--muted);font-weight:600;">Mobile</div><div style="font-weight:700;font-size:15px;">${escMobile(family.mobile)}</div></div>
-    </div>
+          <!-- Family Info -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;padding:16px;background:var(--bg);border-radius:16px;">
+            <div><div style="font-size:12px;color:var(--muted);font-weight:600;">Family ID</div><div style="font-weight:700;font-size:15px;">${esc(family.familyID)}</div></div>
+            <div><div style="font-size:12px;color:var(--muted);font-weight:600;">Main Person</div><div style="font-weight:700;font-size:15px;">${esc(family.mainPerson)}</div></div>
+            <div><div style="font-size:12px;color:var(--muted);font-weight:600;">Area</div><div style="font-weight:700;font-size:15px;">${esc(family.villagePart)}</div></div>
+            <div><div style="font-size:12px;color:var(--muted);font-weight:600;">Mobile</div><div style="font-weight:700;font-size:15px;">${escMobile(family.mobile)}</div></div>
+          </div>
 
-    <div style="font-weight:700;font-size:16px;margin-bottom:14px;"><span data-en="Select Categories" data-bn="বিভাগ নির্বাচন করুন">Select Categories</span></div>
+          <div style="font-weight:700;font-size:16px;margin-bottom:14px;">Select Categories</div>
 
-    <div class="collection-category-card" id="masjidCard" onclick="toggleCategory('masjid', event)">
-      <div class="category-header"><input type="checkbox" id="collectMasjid" onchange="updateCollectionTotal()" onclick="event.stopPropagation();"> 🕌 <span data-en="Masjid" data-bn="মসজিদ">Masjid</span><span class="category-badge">Monthly</span></div>
-      <div id="masjidDetails" class="category-details hidden">
-        <div class="grid grid-2">
-          <div class="form-group" style="margin-bottom:10px;" onclick="event.stopPropagation();"><label style="font-size:12px;">Monthly Amount</label><input id="masjidMonthlyAmount" class="form-control form-control-sm" type="number" readonly value="${masjid}"></div>
-          <div class="form-group" style="margin-bottom:10px;" onclick="event.stopPropagation();"><label style="font-size:12px;">Months</label><input id="masjidMonths" class="form-control form-control-sm" type="number" min="1" value="1" oninput="updateCollectionTotal()" onclick="event.stopPropagation();"></div>
-        </div>
-        <div class="form-group" style="margin-bottom:0;" onclick="event.stopPropagation();"><label style="font-size:12px;">Amount</label><input id="masjidAmount" class="form-control form-control-sm" type="number" readonly style="cursor:not-allowed;background:var(--bg);"></div>
-      </div>
-    </div>
+          <!-- Masjid & Madrasha Row -->
+          <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+            
+            <!-- Masjid Section -->
+            <div style="flex: 1 1 48%; border: 2px solid ${isMasjidPaid ? "var(--danger)" : "var(--border)"}; border-radius: 16px; padding: 16px; background: var(--card); transition: var(--transition); ${isMasjidPaid ? disabledStyle : ""}" id="masjidCard" onclick="${!isMasjidPaid ? "toggleCategory('masjid', event)" : ""}">
+              <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; margin-bottom: 10px;">
+                <input type="checkbox" id="collectMasjid" ${isMasjidPaid ? "disabled" : ""} onchange="updateCollectionTotal()" onclick="event.stopPropagation();" style="width:18px; height:18px; accent-color:var(--primary);">
+                🕌 Masjid <span style="font-size:10px; background:var(--bg); padding:2px 8px; border-radius:20px; font-weight:600;">Monthly</span>
+              </div>
+              ${isMasjidPaid ? `<div style="${noticeStyle}">${paidIcon} ${masjidNotice}</div>` : ""}
+              <div id="masjidDetails" class="hidden" onclick="event.stopPropagation();">
+                <div style="display: flex; gap: 8px;">
+                  <div style="flex: 1 1 30%;">
+                    <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">Amount</label>
+                    <input id="masjidMonthlyAmount" class="form-control form-control-sm" type="number" readonly value="${masjid}">
+                  </div>
+                  <div style="flex: 1 1 30%;">
+                    <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">Months</label>
+                    <input id="masjidMonths" class="form-control form-control-sm" type="number" min="1" value="1" oninput="updateCollectionTotal()">
+                  </div>
+                  <div style="flex: 1 1 40%;">
+                    <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">Total</label>
+                    <input id="masjidAmount" class="form-control form-control-sm" type="number" readonly style="cursor:not-allowed; background:var(--bg);">
+                  </div>
+                </div>
+              </div>
+            </div>
 
-    <div class="collection-category-card" id="madrashaCard" onclick="toggleCategory('madrasha', event)">
-      <div class="category-header"><input type="checkbox" id="collectMadrasha" onchange="updateCollectionTotal()" onclick="event.stopPropagation();"> 🏫 <span data-en="Madrasha" data-bn="মাদ্রাসা">Madrasha</span><span class="category-badge">Monthly</span></div>
-      <div id="madrashaDetails" class="category-details hidden">
-        <div class="grid grid-2">
-          <div class="form-group" style="margin-bottom:10px;" onclick="event.stopPropagation();"><label style="font-size:12px;">Monthly Amount</label><input id="madrashaMonthlyAmount" class="form-control form-control-sm" type="number" readonly value="${madrasha}"></div>
-          <div class="form-group" style="margin-bottom:10px;" onclick="event.stopPropagation();"><label style="font-size:12px;">Months</label><input id="madrashaMonths" class="form-control form-control-sm" type="number" min="1" value="1" oninput="updateCollectionTotal()" onclick="event.stopPropagation();"></div>
-        </div>
-        <div class="form-group" style="margin-bottom:0;" onclick="event.stopPropagation();"><label style="font-size:12px;">Amount</label><input id="madrashaAmount" class="form-control form-control-sm" type="number" readonly style="cursor:not-allowed;background:var(--bg);"></div>
-      </div>
-    </div>
+            <!-- Madrasha Section -->
+            <div style="flex: 1 1 48%; border: 2px solid ${isMadrashaPaid ? "var(--danger)" : "var(--border)"}; border-radius: 16px; padding: 16px; background: var(--card); transition: var(--transition); ${isMadrashaPaid ? disabledStyle : ""}" id="madrashaCard" onclick="${!isMadrashaPaid ? "toggleCategory('madrasha', event)" : ""}">
+              <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; margin-bottom: 10px;">
+                <input type="checkbox" id="collectMadrasha" ${isMadrashaPaid ? "disabled" : ""} onchange="updateCollectionTotal()" onclick="event.stopPropagation();" style="width:18px; height:18px; accent-color:var(--primary);">
+                🏫 Madrasha <span style="font-size:10px; background:var(--bg); padding:2px 8px; border-radius:20px; font-weight:600;">Monthly</span>
+              </div>
+              ${isMadrashaPaid ? `<div style="${noticeStyle}">${paidIcon} ${madrashaNotice}</div>` : ""}
+              <div id="madrashaDetails" class="hidden" onclick="event.stopPropagation();">
+                <div style="display: flex; gap: 8px;">
+                  <div style="flex: 1 1 30%;">
+                    <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">Amount</label>
+                    <input id="madrashaMonthlyAmount" class="form-control form-control-sm" type="number" readonly value="${madrasha}">
+                  </div>
+                  <div style="flex: 1 1 30%;">
+                    <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">Months</label>
+                    <input id="madrashaMonths" class="form-control form-control-sm" type="number" min="1" value="1" oninput="updateCollectionTotal()">
+                  </div>
+                  <div style="flex: 1 1 40%;">
+                    <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">Total</label>
+                    <input id="madrashaAmount" class="form-control form-control-sm" type="number" readonly style="cursor:not-allowed; background:var(--bg);">
+                  </div>
+                </div>
+              </div>
+            </div>
 
-    ${
-      !isWazLocked
-        ? `
-    <div class="collection-category-card" id="wazCard" onclick="toggleCategory('waz', event)">
-      <div class="category-header"><input type="checkbox" id="collectWaz" onchange="updateCollectionTotal()" onclick="event.stopPropagation();"> 🎤 <span data-en="Waz Mahfil" data-bn="ওয়াজ মাহফিল">Waz Mahfil</span><span class="category-badge">Annual</span></div>
-      <div id="wazDetails" class="category-details hidden">
-        <div class="form-group" style="margin-bottom:10px;" onclick="event.stopPropagation();"><label style="font-size:12px;">Collection Date</label><input id="wazDate" type="date" class="form-control form-control-sm" value="${new Date().toISOString().split("T")[0]}" onclick="event.stopPropagation();"></div>
-        <div class="form-group" style="margin-bottom:10px;" onclick="event.stopPropagation();"><label style="font-size:12px;">Annual Amount</label><input id="wazNormalAmount" class="form-control form-control-sm" type="number" readonly value="${waz}"></div>
-        <div class="form-group" style="margin-bottom:10px;" onclick="event.stopPropagation();"><label style="font-size:12px;">Amount</label><input id="wazAmount" class="form-control form-control-sm" type="number" min="0" value="${waz}" oninput="updateCollectionTotal()" onclick="event.stopPropagation();"></div>
-        <div id="wazReasonBox" class="hidden" onclick="event.stopPropagation();">
-          <div class="form-group" style="margin-bottom:0;"><label style="font-size:12px;color:#d97706;">🔓 Reason for paying less <span style="color:red">*</span></label><textarea id="wazUnlockReason" class="form-control form-control-sm" placeholder="Why is the Waz Mahfil amount less?" onclick="event.stopPropagation();"></textarea></div>
-        </div>
-      </div>
-    </div>`
-        : `<div style="padding:12px;background:rgba(225,29,72,0.08);border:1px solid var(--danger);border-radius:12px;color:var(--danger);font-size:13px;font-weight:600;margin-bottom:14px;">🔒 Waz Mahfil collection is locked until: ${esc(globalWazExpiry)}</div>`
-    }
+          </div>
 
-    <div class="collection-total-box"><span class="total-label">Total Collection</span><span class="total-amount" id="collectionTotal">৳0</span></div>
-    <div class="collection-payment-badge">💵 <span data-en="Payment Method: Cash Only" data-bn="পেমেন্ট পদ্ধতি: শুধুমাত্র নগদ">Payment Method: Cash Only</span></div>
-  `,
+          <!-- Waz Mahfil Row -->
+          ${
+            !isWazDateLocked
+              ? `
+          <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+            <div style="flex: 1 1 100%; border: 2px solid ${isWazPaid ? "var(--danger)" : "var(--border)"}; border-radius: 16px; padding: 16px; background: var(--card); transition: var(--transition); ${isWazPaid ? disabledStyle : ""}" id="wazCard" onclick="${!isWazPaid ? "toggleCategory('waz', event)" : ""}">
+              <div style="display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; margin-bottom: 10px;">
+                <input type="checkbox" id="collectWaz" ${isWazPaid ? "disabled" : ""} onchange="updateCollectionTotal()" onclick="event.stopPropagation();" style="width:18px; height:18px; accent-color:var(--primary);">
+                🎤 Waz Mahfil <span style="font-size:10px; background:var(--bg); padding:2px 8px; border-radius:20px; font-weight:600;">Annual</span>
+              </div>
+              ${isWazPaid ? `<div style="${noticeStyle}">${paidIcon} ${wazNotice}</div>` : ""}
+              <div id="wazDetails" class="hidden" onclick="event.stopPropagation();">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                  
+                  <div style="flex: 1 1 30%;">
+                    <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">Annual Amount</label>
+                    <input id="wazNormalAmount" class="form-control form-control-sm" type="number" readonly value="${waz}">
+                  </div>
+                  
+                  <div style="flex: 1 1 30%;">
+                    <label style="font-size:11px; color:var(--muted); display:block; margin-bottom:4px;">Paid Amount</label>
+                    <input id="wazAmount" class="form-control form-control-sm" type="number" min="0" value="${waz}" oninput="updateCollectionTotal()">
+                  </div>
+                  
+                  <div id="wazReasonBox" class="hidden" style="flex: 1 1 35%;">
+                    <label style="font-size:11px;color:#d97706; display:block; margin-bottom:4px;">🔓 Reason for paying less <span style="color:red">*</span></label>
+                    <input id="wazUnlockReason" type="text" class="form-control form-control-sm" placeholder="Why less?">
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
           `
-    <button class="btn btn-light" onclick="closeModal()">Cancel</button>
-    <button class="btn btn-success" onclick='submitNewCollection(${JSON.stringify(family)})'>💾 <span data-en="Save Collection" data-bn="সংগ্রহ সংরক্ষণ">Save Collection</span></button>
-  `,
+              : `<div style="padding:12px;background:rgba(225,29,72,0.08);border:1px solid var(--danger);border-radius:12px;color:var(--danger);font-size:13px;font-weight:600;margin-bottom:14px;">🔒 Waz Mahfil collection is locked due to date settings.</div>`
+          }
+
+          <!-- Total Box -->
+          <div class="collection-total-box" id="collectionTotalBox">
+            <div style="width: 100%; display: flex; flex-direction: column;">
+              <div style="display: flex; flex-direction: column;">
+                <!-- প্রাথমিক অবস্থায় কিছু না থাকলে খালি থাকবে -->
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span class="total-label" style="font-size: 18px; font-weight: 700;">Total Collection</span>
+                <span class="total-amount" style="font-size: 32px; font-weight: 800;">৳0</span>
+              </div>
+            </div>
+          </div>
+        `,
+          `
+          <button class="btn btn-light" onclick="closeModal()">Cancel</button>
+          <button class="btn btn-success" onclick='submitNewCollection(${JSON.stringify(family)})'>💾 Save Collection</button>
+        `,
         );
         updateLanguage();
-        updateCollectionTotal();
-      }
-
-      function toggleCategory(type, event) {
-        if (
-          event &&
-          event.target &&
-          (event.target.tagName === "INPUT" ||
-            event.target.tagName === "TEXTAREA" ||
-            event.target.closest(".form-group"))
-        )
-          return;
-        const checkboxId = `collect${type.charAt(0).toUpperCase() + type.slice(1)}`;
-        const checkbox = $(checkboxId);
-        if (checkbox) {
-          checkbox.checked = !checkbox.checked;
-          const changeEvent = new Event("change", { bubbles: true });
-          checkbox.dispatchEvent(changeEvent);
-        }
         updateCollectionTotal();
       }
 
@@ -4012,9 +4496,9 @@
           const wazNormal = Number($("wazNormalAmount")?.value || 0),
             wazPaid = Number($("wazAmount")?.value || 0);
           const wazReasonBox = $("wazReasonBox");
-          if (waz && wazPaid > 0 && wazPaid < wazNormal)
+          if (waz && wazPaid > 0 && wazPaid < wazNormal) {
             wazReasonBox?.classList.remove("hidden");
-          else {
+          } else {
             wazReasonBox?.classList.add("hidden");
             if ($("wazUnlockReason")) $("wazUnlockReason").value = "";
           }
@@ -4026,10 +4510,40 @@
           : 0;
         const wazAmount =
           waz && $("collectWaz") ? Number($("wazAmount")?.value || 0) : 0;
-        if ($("collectionTotal"))
-          $("collectionTotal").textContent = money(
-            masjidAmount + madrashaAmount + wazAmount,
-          );
+        const total = masjidAmount + madrashaAmount + wazAmount;
+
+        // ক্যাটাগরি ডিটেইলস তৈরি (আরও ছোট করা হয়েছে)
+        let detailsHtml = "";
+        if (masjidAmount > 0)
+          detailsHtml += `<div style="display:flex; justify-content:space-between; margin-bottom:2px; font-size:12px; font-weight:500;"><span>🕌 Masjid</span><span>${money(masjidAmount)}</span></div>`;
+        if (madrashaAmount > 0)
+          detailsHtml += `<div style="display:flex; justify-content:space-between; margin-bottom:2px; font-size:12px; font-weight:500;"><span>🏫 Madrasha</span><span>${money(madrashaAmount)}</span></div>`;
+        if (wazAmount > 0)
+          detailsHtml += `<div style="display:flex; justify-content:space-between; margin-bottom:2px; font-size:12px; font-weight:500;"><span>🎤 Waz Mahfil</span><span>${money(wazAmount)}</span></div>`;
+
+        // Total Box আপডেট
+        const totalBox = $("collectionTotalBox");
+        if (totalBox) {
+          totalBox.innerHTML = `
+            <div style="width: 100%; display: flex; flex-direction: column;">
+              
+              <!-- ক্যাটাগরি ডিটেইলস (উপরে) -->
+              <div style="display: flex; flex-direction: column; margin-bottom: 4px;">
+                ${detailsHtml}
+              </div>
+
+              <!-- ড্যাশড লাইন -->
+              ${detailsHtml ? `<div style="border-bottom: 1.5px dashed rgba(255,255,255,0.3); margin: 2px 0 8px 0;"></div>` : ""}
+              
+              <!-- মোট টাকার অংশ (নিচে) -->
+              <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 4px;">
+                <span class="total-label" style="font-size: 18px; font-weight: 800;">Total Collection</span>
+                <span class="total-amount" style="font-size: 28px; font-weight: 800;">${money(total)}</span>
+              </div>
+
+            </div>
+          `;
+        }
       }
 
       async function submitNewCollection(family) {
@@ -4095,7 +4609,6 @@
             monthsCovered: 1,
             amount: amount,
             unlockReason: reason,
-            collectionDate: wazDate,
           });
         }
         if (!collections.length) {
@@ -4118,8 +4631,20 @@
           ]);
           closeModal();
           toast("Collection saved successfully.", "success");
+
           if (result && result.receipt) showReceipt(result.receipt);
-          if (currentPage === "dashboard") renderDashboard();
+
+          if (currentPage === "dashboard") {
+            renderDashboard();
+          } else if (currentPage === "collection") {
+            renderCollection();
+          } else if (currentPage === "search") {
+            performSearch();
+          } else if (currentPage === "families") {
+            renderFamilies();
+          } else if (currentPage === "history") {
+            loadHistory();
+          }
         } catch (error) {
           handleApiError(error);
         }
@@ -4382,7 +4907,7 @@
           $("settingsContainer").innerHTML = `
             ${settingCard("🕌", "Masjid", "MasjidMonthly", settings.MasjidMonthly || 50, "Monthly")}
             ${settingCard("🏫", "Madrasha", "MadrashaMonthly", settings.MadrashaMonthly || 50, "Monthly")}
-            ${settingCard("🎤", "Waz Mahfil", "WazMahfil", settings.WazMahfil || 500, "Annual", settings.WazMahfilExpiryDate)}
+            ${settingCard("🎤", "Waz Mahfil", "WazMahfil", settings.WazMahfil || 500, "Annual", settings.WazMahfilStartDate, settings.WazMahfilEndDate)}
           `;
           updateLanguage();
         } catch (error) {
@@ -4390,7 +4915,15 @@
         }
       }
 
-      function settingCard(icon, title, key, value, period, expiryDate) {
+      function settingCard(
+        icon,
+        title,
+        key,
+        value,
+        period,
+        startDate,
+        endDate,
+      ) {
         return `
           <div class="card">
             <div class="card-body">
@@ -4400,20 +4933,28 @@
                 <label data-en="Amount" data-bn="পরিমাণ">Amount</label>
                 <input id="setting_${key}" type="number" min="0" class="form-control" value="${esc(value)}">
               </div>
+              
               ${
                 key === "WazMahfil"
                   ? `
                 <div class="form-group">
-                  <label data-en="Expiry Date" data-bn="মেয়াদ শেষের তারিখ">Expiry Date</label>
-                  <input id="setting_WazMahfilExpiryDate" type="date" class="form-control" value="${toInputDateValue(expiryDate)}">
-                  <div style="font-size:11px;color:var(--muted);margin-top:4px;">Display: <b>${esc(expiryDate || "Not Set")}</b></div>
+                  <label>Start Date</label>
+                  <input id="setting_WazMahfilStartDate" type="date" class="form-control" value="${toInputDateValue(startDate)}">
+                  <div style="font-size:11px;color:var(--muted);margin-top:4px;">Display: <b>${esc(toCustomDateString(startDate) || "Not Set")}</b></div>
+                </div>
+                <div class="form-group">
+                  <label>End Date</label>
+                  <input id="setting_WazMahfilEndDate" type="date" class="form-control" value="${toInputDateValue(endDate)}">
+                  <div style="font-size:11px;color:var(--muted);margin-top:4px;">Display: <b>${esc(toCustomDateString(endDate) || "Not Set")}</b></div>
                 </div>
               `
                   : ""
               }
+              
               <div class="live-meta">
                 <span data-en="${period}" data-bn="${period === "Monthly" ? "মাসিক" : "বার্ষিক"}">${period}</span>
               </div>
+              
               <button class="btn btn-primary" style="margin-top:12px" onclick="saveSetting('${key}','${title}','${period}', ${key === "WazMahfil" ? "true" : "false"})">
                 💾 <span data-en="Save" data-bn="সংরক্ষণ">Save</span>
               </button>
@@ -4435,17 +4976,28 @@
             value,
             `${title} ${period} collection`,
           ]);
-          if (isWaz && $("setting_WazMahfilExpiryDate")) {
-            const expiryVal = toCustomDateString(
-              $("setting_WazMahfilExpiryDate").value,
+
+          if (isWaz) {
+            const startVal = toCustomDateString(
+              $("setting_WazMahfilStartDate").value,
+            );
+            const endVal = toCustomDateString(
+              $("setting_WazMahfilEndDate").value,
             );
             await api("updateSetting", [
               token,
-              "WazMahfilExpiryDate",
-              expiryVal,
-              "Default Waz Mahfil Expiry Date",
+              "WazMahfilStartDate",
+              startVal,
+              "Waz Mahfil Start Date",
+            ]);
+            await api("updateSetting", [
+              token,
+              "WazMahfilEndDate",
+              endVal,
+              "Waz Mahfil End Date",
             ]);
           }
+
           toast(`${title} setting updated.`, "success");
         } catch (error) {
           handleApiError(error);
@@ -4631,7 +5183,9 @@
         window.saveEditAdmin = saveEditAdmin;
         window.saveSetting = saveSetting;
         window.showMonthlyPayment = showMonthlyPayment;
+        window.showHistoryReceipt = showHistoryReceipt;
         window.downloadReceiptJPG = downloadReceiptJPG;
+        window.downloadHistoryReceiptJPG = downloadHistoryReceiptJPG;
         window.closeModal = closeModal;
         window.modalOutside = modalOutside;
         window.openModal = openModal;
