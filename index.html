@@ -1435,14 +1435,14 @@
       }
 
       .table-wrap {
-        overflow-x: auto;
+        overflow-x: auto !important;
         -webkit-overflow-scrolling: touch;
         border: none;
         border-radius: 0;
       }
 
       table {
-        min-width: 100% !important;
+        min-width: 900px !important;
         font-size: 11px;
       }
 
@@ -2833,8 +2833,8 @@
         el.innerHTML = `
           <div class="card">
             <div class="card-header"><h3>Family Results</h3></div>
-            <div class="card-body table-wrap">
-              <table>
+            <div class="card-body table-wrap" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+              <table style="width: 100%; min-width: 1000px;">
                 <thead>
                   <tr>
                     <th style="text-align:center; width: 120px;">Collect</th>
@@ -3331,8 +3331,8 @@
         const isSuper = isSuperAdmin();
 
         return `
-    <div class="table-wrap" style="overflow-x: hidden;">
-      <table style="table-layout: fixed; width: 100%; min-width: 1050px;">
+    <div class="table-wrap" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+      <table style="width: 100%; min-width: 1000px;">
         <thead>
           <tr>
             ${isSuper ? "<th style='text-align:center; width: 170px;'>Action</th>" : "<th style='text-align:center; width: 100px;'>Status</th>"}
