@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>Sadanandapur Management System</title>
+  <link rel="icon" type="image/png" href="logo.svg">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -78,10 +79,6 @@
         background 0.3s ease,
         color 0.3s ease;
       -webkit-font-smoothing: antialiased;
-    }
-
-    body.bn {
-      font-family: "Hind Siliguri", "Exo 2", sans-serif;
     }
 
     button,
@@ -1664,7 +1661,10 @@
         ">
       <div class="container topbar-inner">
         <div class="brand">
-          <div class="brand-icon">🏠</div>
+          <div class="brand-icon"
+            style="background: transparent; overflow: hidden; border: 1px solid var(--border); padding: 0;">
+            <img src="logo.svg" alt="Logo" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
           <div>
             <h1 style="
                   text-align: left;
@@ -1702,8 +1702,9 @@
           z-index: 10;
         ">
       <div class="login-card dynamic-login-card" style="width: min(400px, 100%)">
-        <div class="login-logo" style="box-shadow: 0 0 30px rgba(79, 70, 229, 0.5)">
-          🔐
+        <div class="login-logo"
+          style="box-shadow: 0 0 30px rgba(79, 70, 229, 0.5); background: transparent; overflow: hidden; border: 2px solid var(--border); padding: 0;">
+          <img src="logo.svg" alt="Logo" style="width: 100%; height: 100%; object-fit: cover;">
         </div>
         <h2 class="login-title-dynamic" style="text-align: center; margin: 20px 0 6px; font-size: 28px">
           Secure Login
@@ -1805,18 +1806,16 @@
           <button class="btn btn-light mobile-menu" onclick="toggleSidebar()">
             ☰
           </button>
-          <div class="brand-icon">🏠</div>
+          <div class="brand-icon"
+            style="background: transparent; overflow: hidden; border: 1px solid var(--border); padding: 0;">
+            <img src="logo.svg" alt="Logo" style="width: 100%; height: 100%; object-fit: cover;">
+          </div>
           <div>
-            <h1 data-en="SADANANDAPUR MANAGEMENT SYSTEM" data-bn="সাদানন্দপুর ম্যানেজমেন্ট সিস্টেম">
-              SADANANDAPUR MANAGEMENT SYSTEM
-            </h1>
+            <h1>SADANANDAPUR MANAGEMENT SYSTEM</h1>
             <small id="userInfo">Administrator</small>
           </div>
         </div>
         <div class="top-actions">
-          <button class="btn btn-light" onclick="toggleLanguage()">
-            <span id="langBtn2">বাংলা</span>
-          </button>
           <button class="btn btn-light" onclick="toggleTheme()">
             <span id="themeBtn2">🌙</span>
           </button>
@@ -1827,35 +1826,35 @@
     <div class="app-layout">
       <aside id="sidebar" class="sidebar" style="display: flex; flex-direction: column;">
         <div style="flex: 1; overflow-y: auto;">
-          <div class="sidebar-title" data-en="MAIN" data-bn="প্রধান">MAIN</div>
+          <div class="sidebar-title">MAIN</div>
           <button class="nav-btn active" data-page="dashboard" onclick="navigate('dashboard')">
-            📊 <span data-en="Dashboard" data-bn="ড্যাশবোর্ড">Dashboard</span>
+            📊 <span>Dashboard</span>
           </button>
           <button class="nav-btn" data-page="collection" onclick="navigate('collection')">
-            💰 <span data-en="Collection" data-bn="সংগ্রহ">Collection</span>
+            💰 <span>Collection</span>
           </button>
           <button class="nav-btn" data-page="history" onclick="navigate('history')">
-            📜 <span data-en="Collection History" data-bn="সংগ্রহের ইতিহাস">Collection History</span>
+            📜 <span>Collection History</span>
           </button>
 
-          <div class="sidebar-title" data-en="FAMILY" data-bn="পরিবার">FAMILY</div>
+          <div class="sidebar-title">FAMILY</div>
           <button class="nav-btn" data-page="families" onclick="navigate('families')">
-            👨‍👩‍👧 <span data-en="Family Management" data-bn="পরিবার ব্যবস্থাপনা">Family Management</span>
+            👨‍👩‍👧 <span data-en="Family Management">Family Management</span>
           </button>
           <button class="nav-btn" data-page="members" onclick="navigate('members')">
-            👨‍👩‍👧‍👦 <span data-en="Family Members" data-bn="পরিবারের সদস্য">Family Members</span>
+            👨‍👩‍👧‍👦 <span data-en="Family Members">Family Members</span>
           </button>
 
           <div id="superMenu">
-            <div class="sidebar-title" data-en="SUPER ADMIN" data-bn="সুপার অ্যাডমিন">SUPER ADMIN</div>
+            <div class="sidebar-title" data-en="SUPER ADMIN">SUPER ADMIN</div>
             <button class="nav-btn" data-page="admins" onclick="navigate('admins')">
-              👮 <span data-en="Admin Management" data-bn="অ্যাডমিন ব্যবস্থাপনা">Admin Management</span>
+              👮 <span data-en="Admin Management">Admin Management</span>
             </button>
             <button class="nav-btn" data-page="settings" onclick="navigate('settings')">
-              ⚙️ <span data-en="Settings" data-bn="সেটিংস">Settings</span>
+              ⚙️ <span data-en="Settings">Settings</span>
             </button>
             <button class="nav-btn" data-page="logs" onclick="navigate('logs')">
-              📋 <span data-en="Activity Logs" data-bn="কার্যকলাপ লগ">Activity Logs</span>
+              📋 <span data-en="Activity Logs">Activity Logs</span>
             </button>
           </div>
         </div>
@@ -1914,7 +1913,6 @@
       );
       let currentPage =
         sessionStorage.getItem("sadanandapur_current_page") || "dashboard";
-      let language = localStorage.getItem("sadanandapur_language") || "en";
       let theme = localStorage.getItem("sadanandapur_theme") || "light";
       let lastReceipt = null;
       let _logoutInProgress = false;
@@ -2085,7 +2083,6 @@
           tooltip = `${category}: ${monthName} ${year} (${isPaid ? "Paid" : "Pending"})`;
         }
 
-        // টুলটিপটি ডটের ঠিক উপরে (Top) থাকবে
         const tooltipPositionStyle =
           "bottom: 150%; top: auto; left: 50%; right: auto; transform: translateX(-50%); margin: 0;";
         const arrowPositionStyle =
@@ -2171,23 +2168,17 @@
       // ================================================================
       // 4. LANGUAGE & THEME TOGGLES
       // ================================================================
-      function toggleLanguage() {
-        language = language === "en" ? "bn" : "en";
-        localStorage.setItem("sadanandapur_language", language);
-        document.body.classList.toggle("bn", language === "bn");
-        updateLanguage();
-        toast(
-          language === "bn"
-            ? "বাংলা মোড চালু হয়েছে।"
-            : "English mode enabled.",
-          "success",
-        );
-      }
 
       function updateLanguage() {
-        const lang = language || "en";
-        document.querySelectorAll("[data-en][data-bn]").forEach((el) => {
-          const target = el.getAttribute(`data-${lang}`) || "";
+        const lang = "en";
+        document.querySelectorAll("[data-en]").forEach((el) => {
+          const target = el.getAttribute("data-en") || "";
+
+          if (el.tagName === "INPUT" || el.tagName === "TEXTAREA") {
+            el.placeholder = target;
+            return;
+          }
+
           if (!el.querySelector("*")) {
             el.textContent = target;
             return;
@@ -2204,16 +2195,6 @@
           if (!replaced)
             el.insertBefore(document.createTextNode(target), el.firstChild);
         });
-
-        const langBtn = $("langBtn"),
-          langBtn2 = $("langBtn2"),
-          langBtnLogin = $("langBtnLogin");
-
-        if (langBtn) langBtn.textContent = lang === "en" ? "বাংলা" : "English";
-        if (langBtn2)
-          langBtn2.textContent = lang === "en" ? "বাংলা" : "English";
-        if (langBtnLogin)
-          langBtnLogin.textContent = lang === "en" ? "বাংলা" : "English";
       }
 
       function toggleTheme() {
@@ -2445,33 +2426,33 @@
         const mainContent = $("mainContent");
         mainContent.innerHTML = `
     <div class="page-title">
-      <div><h2 data-en="📊 Dashboard" data-bn="📊 ড্যাশবোর্ড">📊 Dashboard</h2><p data-en="Collection overview" data-bn="সংগ্রহের সারসংক্ষেপ">Collection overview</p></div>
-      <button class="btn btn-light" onclick="renderDashboard()">↻ <span data-en="Refresh" data-bn="রিফ্রেশ">Refresh</span></button>
+      <div><h2>📊 Dashboard</h2><p>Collection overview</p></div>
+      <button class="btn btn-light" onclick="renderDashboard()">↻ <span>Refresh</span></button>
     </div>
     
     <div id="dashboardStats" class="stats">
       <div class="stat" style="grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; min-height: 100px; color: var(--muted);">
-        <span data-en="Loading Summary" data-bn="লোড হচ্ছে">Loading Summary</span><span class="dot-1">.</span><span class="dot-2">.</span><span class="dot-3">.</span>
+        <span>Loading Summary</span><span class="dot-1">.</span><span class="dot-2">.</span><span class="dot-3">.</span>
       </div>
     </div>
     
     <div class="grid grid-2">
       <div class="card">
-        <div class="card-header"><h3 data-en="📈 Collection Progress" data-bn="📈 সংগ্রহ অগ্রগতি">📈 Collection Progress</h3></div>
+        <div class="card-header"><h3>📈 Collection Progress</h3></div>
         <div class="card-body" id="dashboardProgress" style="color: var(--muted);">
-          <span data-en="Loading" data-bn="লোড হচ্ছে">Loading</span><span class="dot-1">.</span><span class="dot-2">.</span><span class="dot-3">.</span>
+          <span>Loading</span><span class="dot-1">.</span><span class="dot-2">.</span><span class="dot-3">.</span>
         </div>
       </div>
       <div class="card">
         <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-          <h3 data-en="🔴 Live Collection" data-bn="🔴 লাইভ সংগ্রহ" style="margin: 0;">🔴 Live Collection</h3>
+          <h3 style="margin: 0;">🔴 Live Collection</h3>
           <div style="display: flex; align-items: center; gap: 6px;">
             <span style="font-size: 12px; color: #10b981; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">LIVE</span>
             <span style="display: inline-block; width: 10px; height: 10px; background-color: #10b981; border-radius: 50%; animation: pulse-dot 2s infinite; box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);"></span>
           </div>
         </div>
         <div class="card-body" id="dashboardLive" style="color: var(--muted);">
-          <span data-en="Loading" data-bn="লোড হচ্ছে">Loading</span><span class="dot-1">.</span><span class="dot-2">.</span><span class="dot-3">.</span>
+          <span>Loading</span><span class="dot-1">.</span><span class="dot-2">.</span><span class="dot-3">.</span>
         </div>
       </div>
     </div>
@@ -2610,10 +2591,10 @@
                 (x) =>
                   `<div class="live-row">
                 <div>
-                  <b>${esc(x.time || "")} ${x.isToday ? '<span class="badge badge-success" style="font-size:9px;padding:2px 6px;margin-left:4px;">TODAY</span>' : ''}</b>
-                  <div class="live-meta">${esc(x.adminName || "")} · ${esc(x.category || "")}</div>
+                  <b style="font-size: 13px;">${esc(x.time || "")} ${x.isToday ? '<span class="badge badge-success" style="font-size:9px;padding:2px 6px;margin-left:6px;vertical-align:middle;">TODAY</span>' : ''}</b>
+                  <div class="live-meta" style="margin-top: 4px;">${esc(x.adminName || "")} · ${esc(x.category || "")}</div>
                 </div>
-                <b>${money(x.amount)}</b>
+                <b style="font-size: 16px;">${money(x.amount)}</b>
               </div>`,
               )
               .join("")
@@ -2634,15 +2615,15 @@
     </style>
     <div class="members-header-row">
       <div>
-        <h2 data-en="💰 Collection" data-bn="💰 সংগ্রহ">💰 Collection</h2>
+        <h2>💰 Collection</h2>
         <p data-en="${isSuper ? "Collect from any family." : "Collect only from your own Area."}" data-bn="${isSuper ? "যেকোনো পরিবার থেকে সংগ্রহ করুন।" : "শুধুমাত্র আপনার নিজস্ব এলাকা থেকে সংগ্রহ করুন।"}">${isSuper ? "Collect from any family." : "Collect only from your own Area."}</p>
       </div>
       <div class="members-header-right" style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
         <input id="collectionSearchQuery" class="form-control" placeholder="ID or Name or Mobile" autocomplete="off" oninput="searchCollectionFamily()" style="width: 200px; padding: 10px 14px;" />
         <select id="collectionPaymentFilter" class="form-control" style="width:auto; min-width:130px; padding:10px 14px;" onchange="searchCollectionFamily(true)" title="Filter by Payment">
-          <option value="ALL" data-en="All Payments" data-bn="সব পেমেন্ট">All Payments</option>
-          <option value="PENDING" data-en="Pending" data-bn="বাকি">Pending</option>
-          <option value="PAID" data-en="Paid" data-bn="পরিশোধিত">Paid</option>
+          <option value="ALL">All Payments</option>
+          <option value="PENDING">Pending</option>
+          <option value="PAID">Paid</option>
         </select>
       </div>
     </div>
@@ -3118,7 +3099,7 @@
 
     <div class="page-title" style="margin-bottom: 20px;">
       <div>
-        <h2 data-en="👨‍👩‍👧 Family Management" data-bn="👨‍👩‍👧 পরিবার ব্যবস্থাপনা">👨‍👩‍👧 Family Management</h2>
+        <h2>👨‍👩‍👧 Family Management</h2>
         <p data-en="${isSuper ? "Manage all village families (Area-wise)." : "View families in your own Area."}" data-bn="${isSuper ? "সমস্ত গ্রামের পরিবার পরিচালনা করুন (এলাকা ভিত্তিক)।" : "আপনার নিজস্ব এলাকার পরিবার দেখুন।"}">${isSuper ? "Manage all village families (Area-wise)." : "View families in your own Area."}</p>
       </div>
       
@@ -3128,17 +3109,17 @@
               <input type="text" id="familySearchInput" class="form-control" placeholder="ID or Name or Mobile" oninput="filterFamilies()" style="width: 200px; padding: 10px 14px;">
               
               <select id="familyAreaFilter" class="form-control" style="width:auto;min-width:110px;padding:10px 14px;" onchange="filterFamilies()" title="Filter by Area">
-                <option value="ALL" data-en="All Areas" data-bn="সব এলাকা">All Areas</option>
+                <option value="ALL">All Areas</option>
                 <option value="Area 1">Area 1</option><option value="Area 2">Area 2</option><option value="Area 3">Area 3</option><option value="Area 4">Area 4</option>
               </select>
 
               <div class="custom-dropdown">
                 <button class="btn btn-primary" style="display:flex; align-items:center; gap:6px;" onclick="toggleActionDropdown(event)">
-                  ➕ <span data-en="Add Family" data-bn="পরিবার যোগ করুন">Add Family</span> ▾
+                  ➕ <span>Add Family</span> ▾
                 </button>
                 <div id="actionDropdownMenu" class="custom-dropdown-content">
-                  <button class="btn btn-light btn-sm" onclick="closeActionDropdown(); openFamilyForm();">➕ <span data-en="Add" data-bn="যোগ করুন">Add</span></button>
-                  <button class="btn btn-light btn-sm" onclick="closeActionDropdown(); openExcelImport();">📥 <span data-en="Excel" data-bn="এক্সেল">Excel</span></button>
+                  <button class="btn btn-light btn-sm" onclick="closeActionDropdown(); openFamilyForm();">➕ <span>Add</span></button>
+                  <button class="btn btn-light btn-sm" onclick="closeActionDropdown(); openExcelImport();">📥 <span>Excel</span></button>
                 </div>
               </div>
 
@@ -3232,12 +3213,10 @@
 
         let filtered = window.originalFamiliesData || [];
 
-        // এরিয়া ফিল্টার
         if (areaFilter !== "ALL") {
           filtered = filtered.filter((f) => f.villagePart === areaFilter);
         }
 
-        // সার্চ ফিল্টার (Family ID, Name, Mobile)
         if (searchQuery) {
           filtered = filtered.filter((f) => {
             const id = String(f.familyID || "").toLowerCase();
@@ -3259,7 +3238,7 @@
         const families = window.cachedFamilies || [];
         if (!families.length) {
           $("familyTable").innerHTML =
-            `<div class="empty" data-en="No family found." data-bn="কোনো পরিবার পাওয়া যায়নি।">No family found.</div>`;
+            `<div class="empty">No family found.</div>`;
           return;
         }
         const totalPages = Math.ceil(families.length / ROWS_PER_PAGE) || 1;
@@ -3276,7 +3255,7 @@
 
       function renderFamilyTable(families, searchMode, startOffset) {
         if (!families || !families.length)
-          return `<div class="empty" data-en="No family found." data-bn="কোনো পরিবার পাওয়া যায়নি।">No family found.</div>`;
+          return `<div class="empty">No family found.</div>`;
 
         const isSuper = isSuperAdmin();
 
@@ -3416,7 +3395,7 @@
                 <!-- Notice Board (Collapsible) -->
                 <div style="margin-bottom: 20px;">
                   <div id="excelNoticeBtn" onclick="toggleExcelNotice()" style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-size:13px; font-weight:600; color:var(--info); background:rgba(2,132,199,0.1); padding:6px 12px; border-radius:20px; transition:var(--transition);">
-                    ℹ️ <span data-en="Click to view format instructions" data-bn="ফরম্যাট নির্দেশনা দেখতে ক্লিক করুন">Click to view format instructions</span>
+                    ℹ️ <span>Click to view format instructions</span>
                   </div>
                   <div id="excelNoticeBox" class="hidden" style="margin-top:10px; background:rgba(2,132,199,0.08); border:1px solid rgba(2,132,199,0.3); border-radius:12px; padding:14px; font-size:13px; color:var(--text); animation: fade-in 0.3s ease;">
                     <b>📋 Expected columns (in order):</b>
@@ -3436,7 +3415,7 @@
                 <!-- 2 Columns: Area & File -->
                 <div class="grid grid-2">
                   <div class="form-group">
-                    <label data-en="Select Area" data-bn="এলাকা নির্বাচন করুন">Select Area</label>
+                    <label>Select Area</label>
                     <select id="importArea" class="form-control">
                       <option value="Area 1">Area 1</option>
                       <option value="Area 2">Area 2</option>
@@ -3446,7 +3425,7 @@
                   </div>
 
                   <div class="form-group">
-                    <label data-en="Select File" data-bn="ফাইল নির্বাচন করুন">Select File (.xlsx, .xls, .csv)</label>
+                    <label>Select File (.xlsx, .xls, .csv)</label>
 
                     <!-- Custom File Input -->
                     <div style="position: relative; width: 100%; height: 46px;">
@@ -3478,7 +3457,7 @@
           `
                 <button class="btn btn-light" onclick="closeModal()">Cancel</button>
                 <button class="btn btn-success" id="importSubmitBtn" onclick="submitExcelImport()" disabled>
-                  <span data-en="Import Families" data-bn="পরিবার ইমপোর্ট করুন">Import Families</span>
+                  <span>Import Families</span>
                 </button>
               `,
         );
@@ -3491,11 +3470,11 @@
         if (box.classList.contains("hidden")) {
           box.classList.remove("hidden");
           btn.style.color = "var(--danger)";
-          btn.innerHTML = `❌ <span data-en="Hide instructions" data-bn="নির্দেশনা লুকান">Hide instructions</span>`;
+          btn.innerHTML = `❌ <span>Hide instructions</span>`;
         } else {
           box.classList.add("hidden");
           btn.style.color = "var(--info)";
-          btn.innerHTML = `ℹ️ <span data-en="Click to view format instructions" data-bn="ফরম্যাট নির্দেশনা দেখতে ক্লিক করুন">Click to view format instructions</span>`;
+          btn.innerHTML = `ℹ️ <span>Click to view format instructions</span>`;
         }
         updateLanguage();
       }
@@ -3507,7 +3486,7 @@
           display.textContent = input.files[0].name;
           display.style.color = "var(--text)";
           display.style.fontWeight = "600";
-          previewExcelImport(); // ফাইল সিলেক্ট করলেই প্রিভিউ ফাংশন কল হবে
+          previewExcelImport();
         } else {
           display.textContent = "No file chosen";
           display.style.color = "var(--muted)";
@@ -3601,13 +3580,20 @@
       async function submitExcelImport() {
         const area = $("importArea").value;
         const rows = window._excelImportRows || [];
+
         if (!rows.length) {
           toast("No rows to import.", "error");
           return;
         }
+
         const btn = $("importSubmitBtn");
-        btn.disabled = true;
-        btn.innerHTML = "⏳ Importing...";
+        const oldBtnHTML = btn ? btn.innerHTML : "";
+
+        if (btn) {
+          btn.disabled = true;
+          btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite; display:inline-block; vertical-align:middle; margin-right:6px;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg> Importing...`;
+        }
+
         try {
           const payload = rows
             .map((r) => {
@@ -3635,24 +3621,27 @@
 
           $("importResult").classList.remove("hidden");
           $("importResult").innerHTML = `
-                  <div style="background:rgba(5,150,105,0.1);border:1px solid var(--success);border-radius:12px;padding:14px;">
-                    <div style="font-weight:800;color:var(--success);margin-bottom:6px;">✅ Import Complete</div>
-                    <div style="font-size:13px;line-height:1.6;">
-                      <div>📥 <b>Imported:</b> ${result.imported} families → ${esc(result.area)}</div>
-                      <div>⏭️ <b>Skipped (duplicate):</b> ${result.skipped}</div>
-                    </div>
-                  </div>
-                `;
+      <div style="background:rgba(5,150,105,0.1);border:1px solid var(--success);border-radius:12px;padding:14px;">
+        <div style="font-weight:800;color:var(--success);margin-bottom:6px;">✅ Import Complete</div>
+        <div style="font-size:13px;line-height:1.6;">
+          <div>📥 <b>Imported:</b> ${result.imported} families → ${esc(result.area)}</div>
+          <div>⏭️ <b>Skipped (duplicate):</b> ${result.skipped}</div>
+        </div>
+      </div>
+    `;
           toast(result.message || "Import complete.", "success");
 
           setTimeout(() => {
             closeModal();
             renderFamilies();
           }, 1500);
+
         } catch (error) {
-          btn.disabled = false;
-          btn.innerHTML = `✅ Import Families`;
-          updateLanguage();
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = oldBtnHTML;
+            updateLanguage();
+          }
           handleApiError(error);
         }
       }
@@ -3738,27 +3727,36 @@
           return;
         }
 
+        const btn = document.querySelector('#modalFooter button[onclick*="saveFamily"]');
+        const oldBtnHTML = btn ? btn.innerHTML : "";
+
         try {
+          if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite; display:inline-block; vertical-align:middle; margin-right:6px;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg> Saving...`;
+          }
+
           if (family) {
-            const result = await api("updateFamily", [
-              token,
-              family.familyID,
-              data,
-            ]);
-            toast(
-              result.moved ? "Family moved." : "Family updated.",
-              "success",
-            );
+            const result = await api("updateFamily", [token, family.familyID, data]);
+            toast(result.moved ? "Family moved." : "Family updated.", "success");
           } else {
             await api("createFamily", [token, data]);
             toast("Family created.", "success");
           }
+
           closeModal();
 
           setTimeout(() => {
-            window.location.reload();
-          }, 800);
+            if (currentPage === "families") renderFamilies();
+            else if (currentPage === "collection") searchCollectionFamily(true);
+          }, 1000);
+
         } catch (error) {
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = oldBtnHTML;
+            updateLanguage();
+          }
           handleApiError(error);
         }
       }
@@ -3773,8 +3771,8 @@
     </style>
     <div class="members-header-row">
       <div>
-        <h2 data-en="👨‍👩‍👧‍👦 Family Members" data-bn="👨‍👩‍👧‍👦 পরিবারের সদস্য">👨‍👩‍👧‍👦 Family Members</h2>
-        <p data-en="Manage family member information." data-bn="পরিবারের সদস্যদের তথ্য ব্যবস্থাপনা।">Manage family member information.</p>
+        <h2>👨‍👩‍👧‍👦 Family Members</h2>
+        <p>Manage family member information.</p>
       </div>
       <div class="members-header-right">
         
@@ -3794,9 +3792,7 @@
 
       </div>
     </div>
-    <div id="membersResult" style="margin-top:18px">
-      <div class="card"><div class="card-body"><div style="text-align:left; padding-left: 20px; color: var(--text);">Loading<span class="dot-1">.</span><span class="dot-2">.</span><span class="dot-3">.</span></div></div></div>
-    </div>
+    <div id="membersResult" style="margin-top:18px"></div>
   `;
         updateLanguage();
 
@@ -3852,15 +3848,15 @@
       <div class="card">
         <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
           <div>
-            <h3 data-en="Family Members" data-bn="পরিবারের সদস্য">Family Members</h3>
+            <h3>Family Members</h3>
             <div style="font-size:14px;font-weight:600;color:var(--primary);margin-top:5px;">ID: ${esc(family.familyID)} | Area: ${esc(family.villagePart)} ${family.mobile ? `| Mobile: ${escMobile(family.mobile)}` : ""}</div>
           </div>
           
           ${isSuperAdmin()
               ? `
             <div style="display: flex; gap: 8px; align-items: center;">
-              <button class="btn btn-primary btn-sm" onclick='openMemberForm("${esc(familyID)}")'>➕ <span data-en="Add Member" data-bn="সদস্য যোগ করুন">Add Member</span></button>
-              <button class="btn btn-success btn-sm" onclick='openMemberExcelImport("${esc(familyID)}")'>📥 <span data-en="Import Excel" data-bn="এক্সেল ইমপোর্ট">Import Excel</span></button>
+              <button class="btn btn-primary btn-sm" onclick='openMemberForm("${esc(familyID)}")'>➕ <span>Add Member</span></button>
+              <button class="btn btn-success btn-sm" onclick='openMemberExcelImport("${esc(familyID)}")'>📥 <span>Import Excel</span></button>
             </div>
           `
               : ""
@@ -3984,19 +3980,37 @@
           gender: $("memberGender").value,
           address: $("memberAddress").value.trim(),
         };
+
         if (!data.name) {
           toast("Member name is required.", "error");
           return;
         }
+
+        const btn = document.querySelector('#modalFooter button[onclick*="saveMember"]');
+        const oldBtnHTML = btn ? btn.innerHTML : "";
+
         try {
+          if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite; display:inline-block; vertical-align:middle; margin-right:6px;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg> Saving...`;
+          }
+
           if (member)
             await api("updateFamilyMember", [token, member.memberID, data]);
-          else await api("createFamilyMember", [token, familyID, data]);
+          else
+            await api("createFamilyMember", [token, familyID, data]);
+
           closeModal();
           toast("Member saved successfully.", "success");
           $("memberFamilyID").value = familyID;
           loadMembers();
+
         } catch (error) {
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = oldBtnHTML;
+            updateLanguage();
+          }
           handleApiError(error);
         }
       }
@@ -4013,7 +4027,7 @@
           `
                 <div style="margin-bottom: 20px;">
                   <div id="memberExcelNoticeBtn" onclick="toggleMemberExcelNotice()" style="display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-size:13px; font-weight:600; color:var(--info); background:rgba(2,132,199,0.1); padding:6px 12px; border-radius:20px; transition:var(--transition);">
-                    ℹ️ <span data-en="Click to view format instructions" data-bn="ফরম্যাট নির্দেশনা দেখতে ক্লিক করুন">Click to view format instructions</span>
+                    ℹ️ <span>Click to view format instructions</span>
                   </div>
                   <div id="memberExcelNoticeBox" class="hidden" style="margin-top:10px; background:rgba(2,132,199,0.08); border:1px solid rgba(2,132,199,0.3); border-radius:12px; padding:14px; font-size:13px; color:var(--text); animation: fade-in 0.3s ease;">
                     <b>📋 Expected columns (in order):</b>
@@ -4028,7 +4042,7 @@
                 </div>
 
                 <div class="form-group">
-                  <label data-en="Select File" data-bn="ফাইল নির্বাচন করুন">Select File (.xlsx, .xls, .csv)</label>
+                  <label>Select File (.xlsx, .xls, .csv)</label>
                   <div style="position: relative; width: 100%; height: 46px;">
                     <input type="file" id="memberExcelFileInput" accept=".xlsx,.xls,.csv" onchange="updateMemberFileName()"
                       style="position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2;">
@@ -4051,7 +4065,7 @@
           `
                 <button class="btn btn-light" onclick="closeModal()">Cancel</button>
                 <button class="btn btn-success" id="memberImportSubmitBtn" onclick="submitMemberExcelImport()" disabled>
-                  <span data-en="Import Members" data-bn="সদস্য ইমপোর্ট করুন">Import Members</span>
+                  <span>Import Members</span>
                 </button>
               `,
         );
@@ -4064,11 +4078,11 @@
         if (box.classList.contains("hidden")) {
           box.classList.remove("hidden");
           btn.style.color = "var(--danger)";
-          btn.innerHTML = `❌ <span data-en="Hide instructions" data-bn="নির্দেশনা লুকান">Hide instructions</span>`;
+          btn.innerHTML = `❌ <span>Hide instructions</span>`;
         } else {
           box.classList.add("hidden");
           btn.style.color = "var(--info)";
-          btn.innerHTML = `ℹ️ <span data-en="Click to view format instructions" data-bn="ফরম্যাট নির্দেশনা দেখতে ক্লিক করুন">Click to view format instructions</span>`;
+          btn.innerHTML = `ℹ️ <span>Click to view format instructions</span>`;
         }
         updateLanguage();
       }
@@ -4168,14 +4182,19 @@
       async function submitMemberExcelImport() {
         const familyID = window._currentImportFamilyID;
         const rows = window._memberExcelImportRows || [];
+
         if (!rows.length) {
           toast("No rows to import.", "error");
           return;
         }
 
         const btn = $("memberImportSubmitBtn");
-        btn.disabled = true;
-        btn.innerHTML = "⏳ Importing...";
+        const oldBtnHTML = btn ? btn.innerHTML : "";
+
+        if (btn) {
+          btn.disabled = true;
+          btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite; display:inline-block; vertical-align:middle; margin-right:6px;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg> Importing...`;
+        }
 
         try {
           const payload = rows
@@ -4200,23 +4219,26 @@
 
           $("memberImportResult").classList.remove("hidden");
           $("memberImportResult").innerHTML = `
-                  <div style="background:rgba(5,150,105,0.1);border:1px solid var(--success);border-radius:12px;padding:14px;">
-                    <div style="font-weight:800;color:var(--success);margin-bottom:6px;">✅ Import Complete</div>
-                    <div style="font-size:13px;line-height:1.6;">
-                      <div>📥 <b>Imported:</b> ${result.imported} members</div>
-                    </div>
-                  </div>
-                `;
+      <div style="background:rgba(5,150,105,0.1);border:1px solid var(--success);border-radius:12px;padding:14px;">
+        <div style="font-weight:800;color:var(--success);margin-bottom:6px;">✅ Import Complete</div>
+        <div style="font-size:13px;line-height:1.6;">
+          <div>📥 <b>Imported:</b> ${result.imported} members</div>
+        </div>
+      </div>
+    `;
           toast("Members imported successfully.", "success");
 
           setTimeout(() => {
             closeModal();
             loadMembers();
           }, 1500);
+
         } catch (error) {
-          btn.disabled = false;
-          btn.innerHTML = `✅ Import Members`;
-          updateLanguage();
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = oldBtnHTML;
+            updateLanguage();
+          }
           handleApiError(error);
         }
       }
@@ -5007,7 +5029,6 @@
         const madrasha = Number(settings.MadrashaMonthly || 50);
         const waz = Number(settings.WazMahfil || 500);
 
-        // Waz Mahfil এর বছর বের করা
         let wazStartYear = "",
           wazEndYear = "";
         if (settings.WazMahfilStartDate) {
@@ -5019,7 +5040,6 @@
           if (match) wazEndYear = match[0];
         }
 
-        // Settings থেকে Waz Mahfil Start/End Date চেক করা
         let isWazDateLocked = false;
         let wazStartStr = settings.WazMahfilStartDate || "";
         let wazEndStr = settings.WazMahfilEndDate || "";
@@ -5056,12 +5076,10 @@
           }
         }
 
-        // পেইড স্ট্যাটাস চেক
         const isMasjidPaid = family.paidMasjid || false;
         const isMadrashaPaid = family.paidMadrasha || false;
         const isWazPaid = family.paidWaz || false;
 
-        // ডাইনামিক নোটিশ তৈরি
         const currMonthName = MONTH_NAMES[now.getMonth()];
         const currYear = now.getFullYear();
         const yearRange =
@@ -5073,7 +5091,6 @@
         const madrashaNotice = `${currMonthName} ${currYear} (Paid)`;
         const wazNotice = `${yearRange} (Paid)`;
 
-        // ডাইনামিক নোটিশ ব্যাজ স্টাইল (আরও প্রিমিয়াম)
         const noticeStyle = `
                 font-size: 12px;
                 color: #059669;
@@ -5089,7 +5106,6 @@
                 box-shadow: 0 2px 5px rgba(5, 150, 105, 0.1);
               `;
 
-        // কাস্টম SVG টিক আইকন
         const paidIcon = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
 
         const disabledStyle = "opacity: 0.6; cursor: not-allowed;";
@@ -5202,7 +5218,6 @@
                 <div class="collection-total-box" id="collectionTotalBox">
                   <div style="width: 100%; display: flex; flex-direction: column;">
                     <div style="display: flex; flex-direction: column;">
-                      <!-- প্রাথমিক অবস্থায় কিছু না থাকলে খালি থাকবে -->
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                       <span class="total-label" style="font-size: 18px; font-weight: 700;">Total Collection</span>
@@ -5283,7 +5298,6 @@
           waz && $("collectWaz") ? Number($("wazAmount")?.value || 0) : 0;
         const total = masjidAmount + madrashaAmount + wazAmount;
 
-        // ক্যাটাগরি ডিটেইলস তৈরি (আরও ছোট করা হয়েছে)
         let detailsHtml = "";
         if (masjidAmount > 0)
           detailsHtml += `<div style="display:flex; justify-content:space-between; margin-bottom:2px; font-size:12px; font-weight:500;"><span>🕌 Masjid</span><span>${money(masjidAmount)}</span></div>`;
@@ -5292,21 +5306,17 @@
         if (wazAmount > 0)
           detailsHtml += `<div style="display:flex; justify-content:space-between; margin-bottom:2px; font-size:12px; font-weight:500;"><span>🎤 Waz Mahfil</span><span>${money(wazAmount)}</span></div>`;
 
-        // Total Box আপডেট
         const totalBox = $("collectionTotalBox");
         if (totalBox) {
           totalBox.innerHTML = `
                   <div style="width: 100%; display: flex; flex-direction: column;">
 
-                    <!-- ক্যাটাগরি ডিটেইলস (উপরে) -->
                     <div style="display: flex; flex-direction: column; margin-bottom: 4px;">
                       ${detailsHtml}
                     </div>
 
-                    <!-- ড্যাশড লাইন -->
                     ${detailsHtml ? `<div style="border-bottom: 1.5px dashed rgba(255,255,255,0.3); margin: 2px 0 8px 0;"></div>` : ""}
 
-                    <!-- মোট টাকার অংশ (নিচে) -->
                     <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 4px;">
                       <span class="total-label" style="font-size: 18px; font-weight: 800;">Total Collection</span>
                       <span class="total-amount" style="font-size: 28px; font-weight: 800;">${money(total)}</span>
@@ -5452,8 +5462,8 @@
       async function renderAdmins() {
         $("mainContent").innerHTML = `
                 <div class="page-title">
-                  <div><h2 data-en="👮 Admin Management" data-bn="👮 অ্যাডমিন ব্যবস্থাপনা">👮 Admin Management</h2><p data-en="Manage Area 1–4 administrators." data-bn="এলাকা ১–৪ প্রশাসক ব্যবস্থাপনা।">Manage Area 1–4 administrators.</p></div>
-                  <button class="btn btn-primary" onclick="openAdminForm()">➕ <span data-en="Create Admin" data-bn="অ্যাডমিন তৈরি করুন">Create Admin</span></button>
+                  <div><h2>👮 Admin Management</h2><p>Manage Area 1–4 administrators.</p></div>
+                  <button class="btn btn-primary" onclick="openAdminForm()">➕ <span>Create Admin</span></button>
                 </div>
                 <div class="card"><div id="adminTable" class="card-body"><div style="text-align:left; padding-left: 20px; color: var(--text);">Loading<span class="dot-1">.</span><span class="dot-2">.</span><span class="dot-3">.</span></div></div></div>
               `;
@@ -5463,7 +5473,7 @@
           $("adminTable").innerHTML = `
                   <div class="table-wrap">
                     <table>
-                      <thead><tr><th>#</th><th data-en="Name" data-bn="নাম">Name</th><th data-en="Username" data-bn="ব্যবহারকারীর নাম">Username</th><th data-en="Role" data-bn="ভূমিকা">Role</th><th data-en="Area" data-bn="এলাকা">Area</th><th data-en="Status" data-bn="স্থিতি">Status</th><th data-en="Action" data-bn="কর্ম">Action</th></tr></thead>
+                      <thead><tr><th>#</th><th>Name</th><th>Username</th><th>Role</th><th>Area</th><th>Status</th><th>Action</th></tr></thead>
                       <tbody>
                         ${admins
               .map(
@@ -5474,9 +5484,9 @@
                             <td>
                               ${a.role !== "SUPER_ADMIN"
                     ? `
-                                <button class="btn btn-light btn-sm" onclick='toggleAdmin("${esc(a.adminID)}",${a.status === "ACTIVE"})'>${a.status === "ACTIVE" ? "🔴 <span data-en='Disable' data-bn='নিষ্ক্রিয়'>Disable</span>" : "🟢 <span data-en='Enable' data-bn='সক্রিয়'>Enable</span>"}</button>
+                                <button class="btn btn-light btn-sm" onclick='toggleAdmin("${esc(a.adminID)}",${a.status === "ACTIVE"})'>${a.status === "ACTIVE" ? "🔴 <span>Disable</span>" : "🟢 <span>Enable</span>"}</button>
                                 <button class="btn btn-light btn-sm" onclick='openEditAdminForm(${JSON.stringify(a)})'>✏️ <span data-en="Edit" data-bn="এডিট">Edit</span></button>
-                                <button class="btn btn-warning btn-sm" onclick='openResetPasswordModal("${esc(a.adminID)}", "${esc(a.name)}")'>🔑 <span data-en="Reset" data-bn="রিসেট">Reset</span></button>
+                                <button class="btn btn-warning btn-sm" onclick='openResetPasswordModal("${esc(a.adminID)}", "${esc(a.name)}")'>🔑 <span>Reset</span></button>
                               `
                     : ""
                   }
@@ -5503,7 +5513,7 @@
                 <!-- 1st Row: Area (40%) & Name (60%) -->
                 <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px;">
                   <div class="form-group" style="flex: 1 1 35%; margin-bottom: 0; min-width: 120px;">
-                    <label data-en="Area" data-bn="এলাকা">Area</label>
+                    <label>Area</label>
                     <select id="newAdminArea" class="form-control">
                       <option value="Area 1">Area 1</option>
                       <option value="Area 2">Area 2</option>
@@ -5512,7 +5522,7 @@
                     </select>
                   </div>
                   <div class="form-group" style="flex: 1 1 55%; margin-bottom: 0; min-width: 180px;">
-                    <label data-en="Name" data-bn="নাম">Name</label>
+                    <label>Name</label>
                     <input id="newAdminName" class="form-control" placeholder="Full name">
                   </div>
                 </div>
@@ -5520,11 +5530,11 @@
                 <!-- 2nd Row: Username (40%) & Password (60%) -->
                 <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 0;">
                   <div class="form-group" style="flex: 1 1 35%; margin-bottom: 0; min-width: 120px;">
-                    <label data-en="Username" data-bn="ব্যবহারকারীর নাম">Username</label>
+                    <label>Username</label>
                     <input id="newAdminUsername" class="form-control" placeholder="Username">
                   </div>
                   <div class="form-group" style="flex: 1 1 55%; margin-bottom: 0; min-width: 180px;">
-                    <label data-en="Password" data-bn="পাসওয়ার্ড">Password</label>
+                    <label>Password</label>
                     <input id="newAdminPassword" type="password" class="form-control" placeholder="Min 8 characters" minlength="8">
                   </div>
                 </div>
@@ -5545,19 +5555,33 @@
           password: $("newAdminPassword").value,
           villagePart: $("newAdminArea").value,
         };
+
         if (!data.name || !data.username || data.password.length < 8) {
-          toast(
-            "Enter valid admin information. Password must be at least 8 characters.",
-            "error",
-          );
+          toast("Enter valid admin information. Password must be at least 8 characters.", "error");
           return;
         }
+
+        const btn = document.querySelector('#modalFooter button[onclick="createAreaAdmin()"]');
+        const oldBtnHTML = btn ? btn.innerHTML : "";
+
         try {
+          if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite; display:inline-block; vertical-align:middle; margin-right:6px;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg> Creating...`;
+          }
+
           await api("createAreaAdmin", [token, data]);
+
           closeModal();
           toast("Area Admin created successfully.", "success");
           renderAdmins();
+
         } catch (error) {
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = oldBtnHTML;
+            updateLanguage();
+          }
           handleApiError(error);
         }
       }
@@ -5607,19 +5631,19 @@
 
                   <!-- Area (30%) -->
                   <div class="form-group" style="flex: 1 1 25%; margin-bottom: 0; min-width: 100px;">
-                    <label data-en="Area" data-bn="এলাকা">Area</label>
+                    <label>Area</label>
                     <input class="form-control" value="${esc(admin.villagePart)}" disabled style="background:var(--bg); cursor:not-allowed; opacity: 0.8;">
                   </div>
 
                   <!-- Name (40%) -->
                   <div class="form-group" style="flex: 1 1 35%; margin-bottom: 0; min-width: 150px;">
-                    <label data-en="Name" data-bn="নাম">Name</label>
+                    <label>Name</label>
                     <input id="editAdminName" class="form-control" value="${esc(admin.name)}">
                   </div>
 
                   <!-- Username (30%) -->
                   <div class="form-group" style="flex: 1 1 25%; margin-bottom: 0; min-width: 120px;">
-                    <label data-en="Username" data-bn="ব্যবহারকারীর নাম">Username</label>
+                    <label>Username</label>
                     <input id="editAdminUsername" class="form-control" value="${esc(admin.username)}">
                   </div>
 
@@ -5639,16 +5663,32 @@
           name: $("editAdminName").value.trim(),
           username: $("editAdminUsername").value.trim(),
         };
+
         if (!data.name || !data.username) {
           toast("Name and Username are required.", "error");
           return;
         }
+
+        const btn = document.querySelector('#modalFooter button[onclick*="saveEditAdmin"]');
+        const oldBtnHTML = btn ? btn.innerHTML : "";
+
         try {
+          if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite; display:inline-block; vertical-align:middle; margin-right:6px;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg> Saving...`;
+          }
+
           await api("updateAdmin", [token, adminID, data]);
           closeModal();
           toast("Admin details updated successfully.", "success");
           renderAdmins();
+
         } catch (error) {
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = oldBtnHTML;
+            updateLanguage();
+          }
           handleApiError(error);
         }
       }
@@ -5675,15 +5715,32 @@
 
       async function confirmResetPassword(adminID) {
         const password = $("resetPasswordInput").value;
+
         if (!password || password.length < 8) {
           toast("Password must be at least 8 characters.", "error");
           return;
         }
+
+        const btn = document.querySelector('#modalFooter button[onclick*="confirmResetPassword"]');
+        const oldBtnHTML = btn ? btn.innerHTML : "";
+
         try {
+          if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite; display:inline-block; vertical-align:middle; margin-right:6px;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg> Saving...`;
+          }
+
           await api("resetAdminPassword", [token, adminID, password]);
+
           closeModal();
           toast("Password reset successfully.", "success");
+
         } catch (error) {
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = oldBtnHTML;
+            updateLanguage();
+          }
           handleApiError(error);
         }
       }
@@ -5738,7 +5795,7 @@
                     <div style="font-size:30px">${icon}</div>
                     <h3>${title}</h3>
                     <div class="form-group">
-                      <label data-en="Amount" data-bn="পরিমাণ">Amount</label>
+                      <label>Amount</label>
                       <input id="setting_${key}" type="number" min="0" class="form-control" value="${esc(value)}">
                     </div>
 
@@ -5759,11 +5816,11 @@
           }
 
                     <div class="live-meta">
-                      <span data-en="${period}" data-bn="${period === "Monthly" ? "মাসিক" : "বার্ষিক"}">${period}</span>
+                      <span>${period}</span>
                     </div>
 
                     <button class="btn btn-primary" style="margin-top:12px" onclick="saveSetting('${key}','${title}','${period}', ${key === "WazMahfil" ? "true" : "false"})">
-                      💾 <span data-en="Save" data-bn="সংরক্ষণ">Save</span>
+                      💾 <span>Save</span>
                     </button>
                   </div>
                 </div>
@@ -5776,7 +5833,16 @@
           toast("Invalid amount.", "error");
           return;
         }
+
+        const btn = document.querySelector(`button[onclick*="saveSetting('${key}'"]`);
+        const oldBtnHTML = btn ? btn.innerHTML : "";
+
         try {
+          if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite; display:inline-block; vertical-align:middle; margin-right:6px;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line></svg> Saving...`;
+          }
+
           await api("updateSetting", [
             token,
             key,
@@ -5785,12 +5851,9 @@
           ]);
 
           if (isWaz) {
-            const startVal = toCustomDateString(
-              $("setting_WazMahfilStartDate").value,
-            );
-            const endVal = toCustomDateString(
-              $("setting_WazMahfilEndDate").value,
-            );
+            const startVal = toCustomDateString($("setting_WazMahfilStartDate").value);
+            const endVal = toCustomDateString($("setting_WazMahfilEndDate").value);
+
             await api("updateSetting", [
               token,
               "WazMahfilStartDate",
@@ -5805,9 +5868,16 @@
             ]);
           }
 
-          toast(`${title} setting updated.`, "success");
+          toast(`${title} setting updated successfully.`, "success");
+
         } catch (error) {
           handleApiError(error);
+        } finally {
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = oldBtnHTML;
+            updateLanguage();
+          }
         }
       }
 
@@ -5815,10 +5885,10 @@
         $("mainContent").innerHTML = `
                 <div class="page-title">
                   <div>
-                    <h2 data-en="📋 Activity Logs" data-bn="📋 কার্যকলাপ লগ">📋 Activity Logs</h2>
-                    <p data-en="System activity history." data-bn="সিস্টেম কার্যকলাপ ইতিহাস।">System activity history.</p>
+                    <h2>📋 Activity Logs</h2>
+                    <p>System activity history.</p>
                   </div>
-                  <button class="btn btn-light" onclick="renderLogs()">↻ <span data-en="Refresh" data-bn="রিফ্রেশ">Refresh</span></button>
+                  <button class="btn btn-light" onclick="renderLogs()">↻ <span>Refresh</span></button>
                 </div>
                 <div class="card"><div id="logsContainer" class="card-body"><div style="text-align:left; padding-left: 20px; color: var(--text);">Loading<span class="dot-1">.</span><span class="dot-2">.</span><span class="dot-3">.</span></div></div></div>
               `;
@@ -5836,7 +5906,7 @@
       function renderLogsPage() {
         const container = $("logsContainer");
         if (!cachedLogsResults || !cachedLogsResults.length) {
-          container.innerHTML = `<div class="empty" data-en="No logs found." data-bn="কোনো লগ পাওয়া যায়নি।">No logs found.</div>`;
+          container.innerHTML = `<div class="empty">No logs found.</div>`;
           updateLanguage();
           return;
         }
@@ -5855,7 +5925,7 @@
         container.innerHTML = `
                 <div class="table-wrap">
                   <table>
-                    <thead><tr><th>#</th><th data-en="Time" data-bn="সময়">Time</th><th data-en="Admin" data-bn="অ্যাডমিন">Admin</th><th data-en="Role" data-bn="ভূমিকা">Role</th><th data-en="Action" data-bn="কর্ম">Action</th><th data-en="Description" data-bn="বর্ণনা">Description</th></tr></thead>
+                    <thead><tr><th>#</th><th>Time</th><th>Admin</th><th>Role</th><th>Action</th><th>Description</th></tr></thead>
                     <tbody>
                       ${paginated
             .map((log, idx) => {
@@ -5932,7 +6002,6 @@
       // 22. INITIALIZATION & SESSION RESTORE
       // ================================================================
       async function restoreSession() {
-        document.body.classList.toggle("bn", language === "bn");
         loadTheme();
         updateLanguage();
 
@@ -5967,7 +6036,6 @@
         restoreSession();
 
         // Bind global window functions
-        window.toggleLanguage = toggleLanguage;
         window.toggleTheme = toggleTheme;
         window.login = login;
         window.logout = logout;
