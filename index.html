@@ -2304,7 +2304,13 @@
           initializeAdminUI();
           toast("Login successful.", "success");
         } catch (error) {
-          toast(error.message || "Invalid username or password.", "error");
+          let msg = error.message || "Login failed.";
+          if (msg.includes("already logged in")) {
+            msg = "This account is already logged in from another device.";
+          } else if (msg.includes("Invalid")) {
+            msg = "Invalid username or password.";
+          }
+          toast(msg, "error");
         } finally {
           btn.disabled = false;
           if (btnText) btnText.textContent = "Login";
