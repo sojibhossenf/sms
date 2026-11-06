@@ -1435,34 +1435,47 @@
       }
 
       .table-wrap {
-        overflow-x: auto !important;
+        overflow-x: hidden !important;
         -webkit-overflow-scrolling: touch;
         border: none;
         border-radius: 0;
       }
 
       table {
-        min-width: 900px !important;
-        font-size: 11px;
+        min-width: 100% !important;
+        width: 100% !important;
+        font-size: 9px;
+        table-layout: fixed;
       }
 
       th,
       td {
-        padding: 10px 6px !important;
+        padding: 6px 2px !important;
         white-space: normal !important;
+        word-break: break-word;
+        text-align: center !important;
+        vertical-align: middle;
       }
 
       th {
-        font-size: 10px;
+        font-size: 8px;
+        line-height: 1.1;
       }
 
       .btn-sm {
-        padding: 5px 8px !important;
-        font-size: 10px !important;
+        padding: 3px 4px !important;
+        font-size: 8px !important;
+        border-radius: 4px;
       }
 
       .table-wrap td div {
-        gap: 4px !important;
+        gap: 2px !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+      }
+
+      .mobile-fam-id {
+        font-size: 8px;
       }
 
       .page-title {
