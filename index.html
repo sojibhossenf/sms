@@ -2439,6 +2439,7 @@
 
       async function login(event) {
         event.preventDefault();
+
         const username = $("loginUsername").value.trim();
         const password = $("loginPassword").value;
 
@@ -2464,6 +2465,7 @@
 
           token = result.token;
           currentAdmin = result.admin;
+
           sessionStorage.setItem("sadanandapur_token", token);
           sessionStorage.setItem("sadanandapur_admin", JSON.stringify(currentAdmin));
 
@@ -2472,67 +2474,17 @@
 
           initializeAdminUI();
           toast("Login successful.", "success");
+
         } catch (error) {
           let msg = error.message || "Login failed.";
 
-          if (msg === "ALREADY_LOGGED_IN") {
-            openModal(
-              "⚠️ Already Logged In",
-              `
-                <div style="text-align:center; padding:10px;">
-                  <div style="font-size:40px; margin-bottom:10px;">🔐</div>
-                  <h4 style="margin-bottom:10px; font-size:18px;">Account is currently logged in</h4>
-                  <p style="color:var(--muted); font-size:14px; line-height:1.6;">
-                    This account is already logged in from another device/browser.<br>
-                    If you want to login here anyway, the other session will be logged out.
-                  </p>
-                </div>
-              `,
-              `
-                <button class="btn btn-light" onclick="closeModal()">Cancel</button>
-                <button class="btn btn-danger" onclick='forceLogin("${username}", "${password}")'>Force Login</button>
-              `
-            );
+          if (msg.includes("ALREADY_LOGGED_IN") || msg.includes("already logged in")) {
+            toast("This account is active on another device", "error");
           } else {
             if (msg.includes("Invalid")) msg = "Invalid username or password.";
             toast(msg, "error");
           }
-        } finally {
-          btn.disabled = false;
-          if (btnText) btnText.textContent = "Login";
-          if (spinner) spinner.classList.add("hidden");
-        }
-      }
 
-      async function forceLogin(username, password) {
-        closeModal();
-        const btn = $("loginBtn");
-        const btnText = $("loginBtnText");
-        const spinner = $("loginSpinner");
-
-        btn.disabled = true;
-        if (btnText) btnText.textContent = "Force Logging in...";
-        if (spinner) spinner.classList.remove("hidden");
-
-        try {
-          const result = await api("forceLoginAdmin", [username, password]);
-
-          if (!result || !result.token) {
-            throw new Error("Force login failed.");
-          }
-
-          token = result.token;
-          currentAdmin = result.admin;
-          sessionStorage.setItem("sadanandapur_token", token);
-          sessionStorage.setItem("sadanandapur_admin", JSON.stringify(currentAdmin));
-
-          $("loginPage").classList.add("hidden");
-          $("adminPage").classList.remove("hidden");
-
-          initializeAdminUI();
-          toast("Force login successful. Previous session closed.", "success");
-        } catch (error) {
-          toast(error.message || "Force login failed.", "error");
         } finally {
           btn.disabled = false;
           if (btnText) btnText.textContent = "Login";
@@ -6228,6 +6180,9 @@
 
       function closeModal() {
         $("modal").classList.remove("show");
+      }
+      function modalOutside(event) {
+        if (event.target.id === "modal") closeModal();
       }
 
       function handleApiError(error) {
