@@ -7,14 +7,18 @@
   <title>Sadanandapur Management System</title>
   <link rel="icon" type="image/png" href="logo.svg">
 
-  <!-- Google Fonts -->
+  <!-- ================================================================ -->
+  <!-- GOOGLE FONTS                                                     -->
+  <!-- ================================================================ -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
     href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600;700;800&family=Hind+Siliguri:wght@400;500;600;700&display=swap"
     rel="stylesheet" />
 
-  <!-- External Libraries (JPG Download & Excel Import) -->
+  <!-- ================================================================ -->
+  <!-- EXTERNAL LIBRARIES (JPG Download & Excel Import)                 -->
+  <!-- ================================================================ -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous"
     referrerpolicy="no-referrer"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" crossorigin="anonymous"
@@ -22,8 +26,8 @@
 
   <style>
     /* ================================================================
-         CSS VARIABLES & THEMES (Light & Dark Mode)
-         ================================================================ */
+       1. CSS VARIABLES & THEMES (Light & Dark Mode)
+       ================================================================ */
     :root {
       --primary: #4f46e5;
       --primary2: #4338ca;
@@ -62,8 +66,8 @@
     }
 
     /* ================================================================
-         GLOBAL STYLES
-         ================================================================ */
+       2. GLOBAL STYLES
+       ================================================================ */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -124,8 +128,8 @@
     }
 
     /* ================================================================
-         TOPBAR & BRANDING
-         ================================================================ */
+       3. TOPBAR & BRANDING
+       ================================================================ */
     .topbar {
       position: sticky;
       top: 0;
@@ -183,8 +187,8 @@
     }
 
     /* ================================================================
-         BUTTONS
-         ================================================================ */
+       4. BUTTONS
+       ================================================================ */
     .btn {
       border: 0;
       border-radius: 12px;
@@ -250,8 +254,8 @@
     }
 
     /* ================================================================
-         PUBLIC HERO SECTION
-         ================================================================ */
+       5. PUBLIC HERO SECTION
+       ================================================================ */
     .hero {
       padding: 40px 0 24px;
     }
@@ -285,8 +289,8 @@
     }
 
     /* ================================================================
-         CARDS & STATS
-         ================================================================ */
+       6. CARDS & STATS
+       ================================================================ */
     .card {
       background: var(--card);
       backdrop-filter: blur(16px);
@@ -368,8 +372,8 @@
     }
 
     /* ================================================================
-         GRID LAYOUTS
-         ================================================================ */
+       7. GRID LAYOUTS
+       ================================================================ */
     .grid {
       display: grid;
       gap: 20px;
@@ -388,8 +392,8 @@
     }
 
     /* ================================================================
-         LIVE COLLECTION LIST
-         ================================================================ */
+       8. LIVE COLLECTION LIST
+       ================================================================ */
     .live-list {
       max-height: 430px;
       overflow-y: auto;
@@ -460,8 +464,8 @@
     }
 
     /* ================================================================
-         PROGRESS BARS
-         ================================================================ */
+       9. PROGRESS BARS
+       ================================================================ */
     .progress-item {
       margin-bottom: 20px;
     }
@@ -494,8 +498,8 @@
     }
 
     /* ================================================================
-         LOGIN SCREEN
-         ================================================================ */
+       10. LOGIN SCREEN
+       ================================================================ */
     .login-screen {
       min-height: 100vh;
       display: grid;
@@ -548,7 +552,9 @@
       font-weight: 500;
     }
 
-    /* ===== CUSTOM TOOLTIP ===== */
+    /* ================================================================
+       11. CUSTOM TOOLTIP
+       ================================================================ */
     .custom-tooltip-container {
       position: relative;
       display: inline-block;
@@ -593,8 +599,8 @@
     }
 
     /* ================================================================
-         FORMS & INPUTS
-         ================================================================ */
+       12. FORMS & INPUTS
+       ================================================================ */
     .form-group {
       margin-bottom: 18px;
     }
@@ -648,8 +654,8 @@
     }
 
     /* ================================================================
-         ADMIN LAYOUT (SIDEBAR & MAIN CONTENT)
-         ================================================================ */
+       13. ADMIN LAYOUT (SIDEBAR & MAIN CONTENT)
+       ================================================================ */
     .app-layout {
       display: grid;
       grid-template-columns: 260px 1fr;
@@ -749,8 +755,8 @@
     }
 
     /* ================================================================
-         TABLES
-         ================================================================ */
+       14. TABLES
+       ================================================================ */
     .table-wrap {
       width: 100%;
       overflow-x: auto;
@@ -801,8 +807,8 @@
     }
 
     /* ================================================================
-         BADGES & PAYMENT STATUS
-         ================================================================ */
+       15. BADGES & PAYMENT STATUS
+       ================================================================ */
     .badge {
       display: inline-flex;
       align-items: center;
@@ -855,8 +861,8 @@
     }
 
     /* ================================================================
-         MODALS
-         ================================================================ */
+       16. MODALS
+       ================================================================ */
     .modal {
       position: fixed;
       inset: 0;
@@ -945,8 +951,8 @@
     }
 
     /* ================================================================
-         RECEIPT STYLES
-         ================================================================ */
+       17. RECEIPT STYLES
+       ================================================================ */
     .receipt {
       max-width: 500px;
       margin: auto;
@@ -1061,8 +1067,8 @@
     }
 
     /* ================================================================
-         TOASTS & EMPTY STATES
-         ================================================================ */
+       18. TOASTS & EMPTY STATES
+       ================================================================ */
     .toast {
       position: fixed;
       right: 24px;
@@ -1100,8 +1106,8 @@
     }
 
     /* ================================================================
-         COLLECTION FORM CATEGORY CARDS
-         ================================================================ */
+       19. COLLECTION FORM CATEGORY CARDS
+       ================================================================ */
     .collection-category-card {
       border: 2px solid var(--border);
       border-radius: 16px;
@@ -1188,8 +1194,8 @@
     }
 
     /* ================================================================
-         MEMBERS HEADER ROW
-         ================================================================ */
+       20. MEMBERS HEADER ROW
+       ================================================================ */
     .members-header-row {
       display: flex;
       justify-content: space-between;
@@ -1229,8 +1235,8 @@
     }
 
     /* ================================================================
-         PAGINATION
-         ================================================================ */
+       21. PAGINATION
+       ================================================================ */
     .pagination-wrap {
       display: flex;
       justify-content: space-between;
@@ -1259,8 +1265,8 @@
     }
 
     /* ================================================================
-         INACTIVE NOTICE MODAL
-         ================================================================ */
+       22. INACTIVE NOTICE MODAL
+       ================================================================ */
     .notice-box {
       text-align: center;
       padding: 10px 0;
@@ -1302,8 +1308,8 @@
     }
 
     /* ================================================================
-         MEDIA QUERIES (Responsive Design)
-         ================================================================ */
+       23. MEDIA QUERIES (Responsive Design)
+       ================================================================ */
     .mobile-menu {
       display: none;
     }
@@ -1350,14 +1356,14 @@
         font-size: 26px;
       }
 
-      /* ২ কলামে কার্ড বসানো */
+      /* Two-column cards on mobile */
       .stats {
         grid-template-columns: repeat(2, 1fr) !important;
         gap: 10px !important;
         margin: 15px 0 !important;
       }
 
-      /* কার্ডের প্যাডিং ও সাইজ কমানো */
+      /* Compact stat cards */
       .stat {
         padding: 12px 10px !important;
         min-height: 100px !important;
@@ -1381,7 +1387,7 @@
         margin-top: 4px !important;
       }
 
-      /* Today's Paid এবং Total Family কার্ডের ভেতরের এরিয়া বাটনগুলো ছোট করা */
+      /* Shrink area buttons inside Today's Paid / Total Family cards */
       .stat>div[style*="display: flex; justify-content: space-between"] {
         gap: 2px !important;
         margin-top: 5px !important;
@@ -1537,8 +1543,8 @@
     }
 
     /* ================================================================
-         PRINT STYLES
-         ================================================================ */
+       24. PRINT STYLES
+       ================================================================ */
     @media print {
       body * {
         visibility: hidden !important;
@@ -1565,6 +1571,9 @@
       }
     }
 
+    /* ================================================================
+       25. ANIMATIONS
+       ================================================================ */
     @keyframes spin {
       100% {
         transform: rotate(360deg);
@@ -1646,9 +1655,9 @@
 </head>
 
 <body>
-  <!-- ================================================================
-         LOGIN PAGE
-         ================================================================ -->
+  <!-- ================================================================ -->
+  <!-- LOGIN PAGE                                                       -->
+  <!-- ================================================================ -->
   <div id="loginPage" class="hidden" style="
         min-height: 100vh;
         display: flex;
@@ -1901,9 +1910,9 @@
     </footer>
   </div>
 
-  <!-- ================================================================
-         ADMIN APPLICATION (Dashboard & Management)
-         ================================================================ -->
+  <!-- ================================================================ -->
+  <!-- ADMIN APPLICATION (Dashboard & Management)                       -->
+  <!-- ================================================================ -->
   <div id="adminPage" class="hidden">
     <header class="topbar">
       <div class="container topbar-inner">
@@ -1988,9 +1997,9 @@
       <main id="mainContent" class="main-content"></main>
     </div>
 
-    <!-- ================================================================
-         MODAL & TOAST (Global Elements)
-         ================================================================ -->
+    <!-- ================================================================ -->
+    <!-- MODAL & TOAST (Global Elements)                                  -->
+    <!-- ================================================================ -->
     <div id="modal" class="modal" onclick="modalOutside(event)">
       <div class="modal-box">
         <div class="modal-head">
@@ -2005,6 +2014,9 @@
     <div id="toast" class="toast"></div>
     <div id="printArea" class="hidden"></div>
 
+    <!-- ================================================================ -->
+    <!-- MAIN APPLICATION SCRIPT                                          -->
+    <!-- ================================================================ -->
     <script>
       // ================================================================
       // 1. CONFIGURATION & GLOBAL STATE
@@ -2715,7 +2727,7 @@
       }
 
       // ================================================================
-      // 9. COLLECTION PAGE (Payment Column Updated)
+      // 9. COLLECTION PAGE
       // ================================================================
       function renderCollection() {
         const mainContent = $("mainContent");
@@ -2879,7 +2891,7 @@
                   <tr>
                     <th style="text-align:center; width: 90px;">Collect</th>
                     <th style="text-align:center; width: 100px;">Family ID</th>
-                    <th style="text-align:center; width: 150px;">Main Person</th>
+                    <th style="text-align:left; width: 150px;">Main Person</th>
                     <th style="text-align:center; width: 110px;">Mobile</th>
                     <th style="text-align:center; width: 70px;">Area</th>
                     <th style="text-align:center; width: 40px;">MAS</th>
@@ -2906,7 +2918,7 @@
                       </td>
 
                       <td style="text-align:center;"><b>${esc(f.familyID)}</b></td>
-                      <td style="text-align:center;"><b>${esc(f.mainPerson)}</b></td>
+                      <td style="text-align:left;"><b>${esc(f.mainPerson)}</b></td>
                       <td style="text-align:center;">${escMobile(f.mobile)}</td>
                       <td style="text-align:center;">${esc(f.villagePart)}</td>
                       <td style="text-align:center; padding: 10px 5px;">${renderPaymentBadge(f.paidMasjid, "Masjid", currMonthName, currYear)}</td>
@@ -3049,7 +3061,7 @@
           search: $("historySearch") ? $("historySearch").value.trim() : "",
         };
 
-        // Show Spinner
+        // Show spinner
         const btn = $("historySearchBtn");
         const icon = $("historySearchIcon");
         const spinner = $("historySearchSpinner");
@@ -3067,7 +3079,7 @@
         } catch (error) {
           handleApiError(error);
         } finally {
-          // Hide Spinner
+          // Hide spinner
           if (btn) btn.disabled = false;
           if (icon) icon.classList.remove("hidden");
           if (spinner) spinner.classList.add("hidden");
@@ -3099,7 +3111,7 @@
                     <th style="text-align:center;">Action</th>
                     <th style="text-align:center;">Date</th>
                     <th style="text-align:center;">Family ID</th>
-                    <th style="text-align:center;">Main Person</th>
+                    <th style="text-align:left;">Main Person</th>
                     <th style="text-align:center;">Category</th>
                     <th style="text-align:center;">Amount</th>
                     <th style="text-align:center;">Area</th>
@@ -3117,7 +3129,7 @@
                       </td>
                       <td style="text-align:center;">${esc(h.collectionDate)}</td>
                       <td style="text-align:center;"><b>${esc(h.familyID)}</b></td>
-                      <td style="text-align:center;">${esc(h.mainPerson)}</td>
+                      <td style="text-align:left;">${esc(h.mainPerson)}</td>
                       <td style="text-align:center;"><span class="badge badge-info">${esc(h.category)}</span></td>
                       <td style="text-align:center;"><b>${money(h.amount)}</b></td>
                       <td style="text-align:center;">${esc(h.villagePart)}</td>
@@ -3160,7 +3172,7 @@
       }
 
       // ================================================================
-      // 13. FAMILY MANAGEMENT PAGE (DOB -> Date of Birth)
+      // 13. FAMILY MANAGEMENT PAGE
       // ================================================================
       async function renderFamilies() {
         const isSuper = isSuperAdmin();
@@ -3377,7 +3389,7 @@
           <tr>
             ${isSuper ? "<th style='text-align:center; width: 130px;'>Action</th>" : "<th style='text-align:center; width: 80px;'>Status</th>"}
             <th style="text-align:center; width: 100px;">Family ID</th>
-            <th style="text-align:center; width: 150px;">Main Person</th>
+            <th style="text-align:left; width: 150px;">Main Person</th>
             <th style="text-align:center; width: 120px;">Date of Birth</th>
             <th style="text-align:center; width: 50px;">Age</th>
             <th style="text-align:center; width: 60px;">Gender</th>
@@ -3413,7 +3425,7 @@
               </td>
 
               <td style="text-align:center; word-wrap: break-word;"><b>${esc(f.familyID)}</b></td>
-              <td style="text-align:center; word-wrap: break-word;">${esc(f.mainPerson)}</td>
+              <td style="text-align:left; word-wrap: break-word;">${esc(f.mainPerson)}</td>
               <td style="text-align:center; word-wrap: break-word;">${esc(dobDisplay)}</td>
               <td style="text-align:center;">${ageDisplay !== "" ? ageDisplay : "-"}</td>
               <td style="text-align:center;">${esc(f.gender || "-")}</td>
@@ -3873,7 +3885,7 @@
       }
 
       // ================================================================
-      // 16. FAMILY MEMBERS (Address added, DOB renamed)
+      // 16. FAMILY MEMBERS
       // ================================================================
       async function renderMembers() {
         $("mainContent").innerHTML = `
@@ -4929,7 +4941,7 @@
             borderRadius: "16px",
             boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
             border: "1px solid #e2e8f0",
-            fontFamily: '"Exo 2", sans-serif',
+            fontFamily: '"Exo 2", "Hind Siliguri", sans-serif',
             color: "#1a1a2e",
           });
 
@@ -4937,6 +4949,7 @@
           cloneRows.forEach((row) => {
             row.style.padding = "10px 0";
             row.style.gap = "20px";
+            row.style.fontFamily = '"Exo 2", "Hind Siliguri", sans-serif';
           });
 
           const cloneItems = clone.querySelectorAll(".receipt-items");
@@ -4945,6 +4958,7 @@
             item.style.margin = "20px 0";
             item.style.maxHeight = "none";
             item.style.overflowY = "visible";
+            item.style.fontFamily = '"Exo 2", "Hind Siliguri", sans-serif';
           });
 
           const container = document.createElement("div");
@@ -4956,13 +4970,15 @@
             padding: "30px",
             background: "#ffffff",
             zIndex: "-1",
+            fontFamily: '"Exo 2", "Hind Siliguri", sans-serif',
           });
 
           container.appendChild(clone);
           document.body.appendChild(container);
 
-          if (document.fonts && document.fonts.ready)
+          if (document.fonts && document.fonts.ready) {
             await document.fonts.ready;
+          }
 
           const canvas = await html2canvas(container, {
             scale: Math.max(2, window.devicePixelRatio || 1),
@@ -4973,6 +4989,16 @@
             imageTimeout: 15000,
             height: container.scrollHeight,
             windowHeight: container.scrollHeight,
+            onclone: function (clonedDoc) {
+              const el = clonedDoc.getElementById("jpgReceiptClone");
+              if (el) {
+                el.style.fontFamily = '"Exo 2", "Hind Siliguri", sans-serif';
+                const allNodes = el.querySelectorAll('*');
+                allNodes.forEach(node => {
+                  node.style.fontFamily = '"Exo 2", "Hind Siliguri", sans-serif';
+                });
+              }
+            }
           });
 
           const dataUrl = canvas.toDataURL("image/jpeg", 0.95);
@@ -5045,7 +5071,7 @@
             borderRadius: "16px",
             boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
             border: "1px solid #e2e8f0",
-            fontFamily: '"Exo 2", sans-serif',
+            fontFamily: '"Exo 2", "Hind Siliguri", sans-serif',
             color: "#1a1a2e",
           });
 
@@ -5053,6 +5079,7 @@
           cloneRows.forEach((row) => {
             row.style.padding = "10px 0";
             row.style.gap = "20px";
+            row.style.fontFamily = '"Exo 2", "Hind Siliguri", sans-serif';
           });
 
           const cloneItems = clone.querySelectorAll(".receipt-items");
@@ -5061,6 +5088,7 @@
             item.style.margin = "20px 0";
             item.style.maxHeight = "none";
             item.style.overflowY = "visible";
+            item.style.fontFamily = '"Exo 2", "Hind Siliguri", sans-serif';
           });
 
           const container = document.createElement("div");
@@ -5072,13 +5100,15 @@
             padding: "30px",
             background: "#ffffff",
             zIndex: "-1",
+            fontFamily: '"Exo 2", "Hind Siliguri", sans-serif',
           });
 
           container.appendChild(clone);
           document.body.appendChild(container);
 
-          if (document.fonts && document.fonts.ready)
+          if (document.fonts && document.fonts.ready) {
             await document.fonts.ready;
+          }
 
           const canvas = await html2canvas(container, {
             scale: Math.max(2, window.devicePixelRatio || 1),
@@ -5089,6 +5119,16 @@
             imageTimeout: 15000,
             height: container.scrollHeight,
             windowHeight: container.scrollHeight,
+            onclone: function (clonedDoc) {
+              const el = clonedDoc.getElementById("jpgReceiptClone");
+              if (el) {
+                el.style.fontFamily = '"Exo 2", "Hind Siliguri", sans-serif';
+                const allNodes = el.querySelectorAll('*');
+                allNodes.forEach(node => {
+                  node.style.fontFamily = '"Exo 2", "Hind Siliguri", sans-serif';
+                });
+              }
+            }
           });
 
           const dataUrl = canvas.toDataURL("image/jpeg", 0.95);
@@ -5568,7 +5608,7 @@
       }
 
       // ================================================================
-      // 19. ADMIN MANAGEMENT (Custom Modals for Reset & Disable)
+      // 19. ADMIN MANAGEMENT
       // ================================================================
       async function renderAdmins() {
         $("mainContent").innerHTML = `
@@ -5698,7 +5738,7 @@
       }
 
       function toggleAdmin(adminID, currentlyActive) {
-        // Custom Confirmation Modal
+        // Custom confirmation modal
         openModal(
           "⚠️ Confirm Status Change",
           `
