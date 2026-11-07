@@ -1651,6 +1651,16 @@
       visibility: visible;
       opacity: 1;
     }
+
+    input[type="password"]::-ms-reveal,
+    input[type="password"]::-ms-clear {
+      display: none;
+    }
+
+    input[type="password"]::-webkit-textfield-decoration-container,
+    input[type="password"]::-webkit-credentials-auto-fill-button {
+      display: none !important;
+    }
   </style>
 </head>
 
@@ -1856,6 +1866,7 @@
                   background: rgba(0, 0, 0, 0.2);
                   border: 1px solid rgba(255, 255, 255, 0.1);
                   transition: 0.3s;
+                  padding-right: 40px;
                 " onfocus="
                   this.style.borderColor = '#4f46e5';
                   this.style.boxShadow = '0 0 10px rgba(79, 70, 229, 0.3)';
@@ -1863,6 +1874,23 @@
                   this.style.borderColor = 'rgba(255,255,255,0.1)';
                   this.style.boxShadow = 'none';
                 " />
+
+            <span onclick="togglePasswordVisibility('loginPassword', this)"
+              style="position: absolute; right: 15px; top: 36px; cursor: pointer; color: var(--muted); display: flex; align-items: center; justify-content: center;">
+              <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+              <svg id="eyeClosed" class="hidden" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path
+                  d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                </path>
+                <line x1="1" y1="1" x2="23" y2="23"></line>
+              </svg>
+            </span>
           </div>
 
           <div style="display: flex; justify-content: flex-end; margin-top: 30px">
@@ -1937,6 +1965,11 @@
       </div>
     </header>
 
+    <!-- Sidebar Overlay for Mobile -->
+    <div id="sidebarOverlay" onclick="toggleSidebar()"
+      style="display: none; position: fixed; top: 76px; left: 0; width: 100vw; height: calc(100vh - 76px); z-index: 290; background: transparent;">
+    </div>
+
     <div class="app-layout">
       <aside id="sidebar" class="sidebar" style="display: flex; flex-direction: column;">
         <div style="flex: 1; overflow-y: auto;">
@@ -1974,9 +2007,9 @@
         </div>
 
         <div
-          style="padding-top: 20px; display: flex; justify-content: flex-end; border-top: 1px solid var(--border); margin-top: 10px;">
+          style="padding: 15px 0; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; background: var(--card);">
           <button class="btn btn-danger" onclick="logout()" id="logoutBtn"
-            style="display: flex; align-items: center; gap: 6px; padding: 8px 16px; font-size: 13px;">
+            style="display: flex; align-items: center; gap: 6px; padding: 8px 16px; font-size: 13px; margin-right: 14px;">
             <span id="logoutBtnText">Logout</span>
             <svg id="logoutSpinner" class="hidden" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
               viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -2384,6 +2417,25 @@
       // ================================================================
       // 7. LOGIN / LOGOUT & SESSION
       // ================================================================
+      function togglePasswordVisibility(inputId, iconContainer) {
+        const input = document.getElementById(inputId);
+        const eyeOpen = iconContainer.querySelector('#eyeOpen');
+        const eyeClosed = iconContainer.querySelector('#eyeClosed');
+
+        if (!input) return;
+
+        if (input.type === "password") {
+          input.type = "text";
+          if (eyeOpen) eyeOpen.classList.add("hidden");
+          if (eyeClosed) eyeClosed.classList.remove("hidden");
+          iconContainer.style.color = "var(--primary)";
+        } else {
+          input.type = "password";
+          if (eyeOpen) eyeOpen.classList.remove("hidden");
+          if (eyeClosed) eyeClosed.classList.add("hidden");
+          iconContainer.style.color = "var(--muted)";
+        }
+      }
 
       async function login(event) {
         event.preventDefault();
@@ -2487,7 +2539,18 @@
       }
 
       function toggleSidebar() {
-        $("sidebar").classList.toggle("open");
+        const sidebar = $("sidebar");
+        const overlay = $("sidebarOverlay");
+
+        if (!sidebar) return;
+
+        sidebar.classList.toggle("open");
+
+        if (sidebar.classList.contains("open")) {
+          if (overlay) overlay.style.display = "block";
+        } else {
+          if (overlay) overlay.style.display = "none";
+        }
       }
 
       function navigate(page) {
@@ -6223,6 +6286,7 @@
         window.downloadHistoryReceiptJPG = downloadHistoryReceiptJPG;
         window.closeModal = closeModal;
         window.modalOutside = modalOutside;
+        window.togglePasswordVisibility = togglePasswordVisibility;
         window.openModal = openModal;
         window.isSuperAdmin = isSuperAdmin;
         window.money = money;
